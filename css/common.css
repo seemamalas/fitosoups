@@ -1,0 +1,164 @@
+/* ==========================================================================
+   Common styles: loaded on every page.
+   Brand tokens, base elements, and the shared components
+   (top bar, header, footer, drawers, cart, legal panel, toast).
+   Page-only styles live in css/pages/<page>.css.
+   ========================================================================== */
+
+@font-face{font-family:'Funflare';src:url(../assets/fonts/funflare.woff2) format('woff2');font-display:swap}
+
+:root{
+  color-scheme:light;
+  --paper:#F5EFE3; --tint:#EDE4D3; --tint2:#E3D7C1;
+  --ink:#3A2E22; --ink2:#6A5A48; --soft:#9B8C77;
+  --terra:#C1613C; --sage:#6B7A3A; --gold:#E8C766;
+  --rule:#DFD3BE;
+  --logo-brown:#493627; --crouton:#B08A3E;
+  --disp:'Fraunces',Georgia,serif;
+  --script:'Parisienne',cursive;
+  --brand:'Funflare','Fraunces',Georgia,serif;
+  --ui:'Work Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
+  font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+svg{display:block;max-width:100%;height:auto}
+h1,h2,h3{font-family:var(--disp);font-weight:600;line-height:1.12;margin:0;letter-spacing:-0.02em}
+h1{font-size:clamp(2.5rem,6.4vw,4.1rem)}
+h2{font-size:clamp(1.9rem,4vw,2.8rem)}
+h3{font-size:1.3rem}
+p{margin:0 0 1.05em}
+a{color:inherit}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--terra);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Layout ---------- */
+.site-wrap{max-width:1080px;margin:0 auto;padding:0 26px}
+
+/* ---------- Buttons ---------- */
+.site-btn{border:none;border-radius:999px;padding:15px 30px;font-family:var(--ui);font-weight:500;
+  font-size:.98rem;background:var(--terra);color:#fff;text-decoration:none;display:inline-block;
+  transition:transform .12s,filter .12s}
+.site-btn:hover{filter:brightness(1.06)}
+.site-btn:active{transform:translateY(1px)}
+.site-btn--line{background:none;color:var(--ink);border:1.5px solid var(--rule)}
+.site-btn--line:hover{border-color:var(--ink);filter:none}
+
+/* Small print under buttons and forms */
+.site-smallprint{font-size:.8rem;color:var(--soft);margin-top:12px;text-align:center;line-height:1.55}
+
+/* ---------- Top bar (partials/topbar.html) ---------- */
+.site-topbar{display:flex;justify-content:center;align-items:center;gap:4px 10px;flex-wrap:wrap;
+  background:var(--terra);color:#FCEFE6;text-decoration:none;padding:7px 18px;
+  font-size:.79rem;line-height:1.4;text-align:center}
+.site-topbar b{color:#fff;font-weight:600}
+.site-topbar__cta{color:#fff;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.site-topbar__cta::after{content:" \2192"}
+.site-topbar:hover .site-topbar__cta{color:#fff;text-decoration-thickness:2px}
+@media(max-width:620px){.site-topbar{font-size:.74rem;padding:6px 14px}.site-topbar__more{display:none}}
+@media(max-width:400px){.site-topbar{font-size:.69rem;padding:6px 10px;gap:3px 7px}}
+
+/* ---------- Header / navigation (partials/header.html) ---------- */
+.site-nav{position:sticky;top:0;z-index:60;background:var(--paper)}
+.site-nav__inner{max-width:1080px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:24px;position:relative}
+.site-nav__brand{flex-shrink:0;display:flex;align-items:center;gap:10px;text-decoration:none}
+.site-nav__wordmark{height:36px;width:auto}
+@media(max-width:420px){.site-nav__wordmark{height:30px}}
+@media(max-width:420px){.site-nav__inner{padding:10px 18px;gap:16px}.site-nav .site-nav__wordmark{height:27px}.site-nav__links{gap:18px}}
+.site-nav__links{margin-left:auto;display:flex;gap:26px;align-items:center}
+.site-nav__links a{text-decoration:none;color:var(--ink2);font-size:.93rem}
+.site-nav__links a:hover{color:var(--terra)}
+@media(max-width:800px){.site-nav__links a:not(.site-social-link){display:none}}
+.site-nav__cart{background:var(--ink);border:none;color:var(--paper);padding:10px 20px;border-radius:999px;
+  font-size:.9rem;font-weight:500;display:flex;align-items:center;gap:8px}
+.site-nav__cart-count{background:var(--terra);color:#fff;border-radius:999px;min-width:20px;height:20px;
+  display:grid;place-items:center;font-size:.75rem;font-weight:600}
+
+/* Instagram link, used in the header and the footer */
+.site-social-link{display:inline-flex;align-items:center;gap:8px}
+.site-social-link__icon{flex:0 0 auto}
+
+/* ---------- Footer (partials/footer.html) ---------- */
+.site-footer{border-top:1px solid var(--rule);padding:52px 0 40px;color:var(--soft);font-size:.9rem}
+.site-footer__grid{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap;margin-bottom:30px}
+.site-footer__about{max-width:28ch}
+.site-footer__logo{height:30px;width:auto;margin-bottom:16px}
+.site-footer__tagline,.site-footer__copy{margin:0}
+.site-footer a{color:var(--ink2);text-decoration:none;display:block;margin-bottom:8px}
+.site-footer a.site-social-link{display:inline-flex}
+.site-footer a:hover{color:var(--terra)}
+.site-footer h4{font-family:var(--ui);font-size:.77rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--soft);margin:0 0 12px}
+
+/* ---------- Drawers: cart and legal (partials/drawers.html) ---------- */
+.site-scrim{position:fixed;inset:0;background:rgba(30,24,17,.55);opacity:0;pointer-events:none;
+  transition:opacity .24s;z-index:90}
+.site-scrim.is-open{opacity:1;pointer-events:auto}
+.site-drawer{position:fixed;top:0;right:0;height:100%;width:min(410px,100%);background:var(--paper);
+  z-index:100;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column}
+.site-drawer.is-open{transform:none}
+.site-drawer__head{display:flex;align-items:center;padding:22px 24px;border-bottom:1px solid var(--rule)}
+.site-drawer__head h3{margin-right:auto}
+.site-drawer__close{background:none;border:none;font-size:1.6rem;color:var(--soft);line-height:1;padding:0 4px}
+.site-drawer__body{flex:1;overflow-y:auto;padding:20px 24px}
+.site-drawer__foot{padding:22px 24px;border-top:1px solid var(--rule);background:var(--tint)}
+
+/* Cart contents (js/common/cart.js) */
+.cart-item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--rule)}
+.cart-item--plain{border:none}
+.cart-item__thumb{width:46px;flex:0 0 46px}
+.cart-item__label{padding-left:2px}
+.cart-item__name{font-family:var(--script);font-weight:600;font-size:1.55rem;line-height:1.15;
+  letter-spacing:.008em;color:var(--terra)}
+.cart-item__meta{font-size:.82rem;color:var(--soft)}
+.cart-item__price{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.cart-item__label-title{font-weight:600}
+.cart-item__label-title--saving,.cart-item__price--saving{color:var(--sage)}
+.cart-clear{width:100%;margin-top:18px}
+.cart-empty{text-align:center;color:var(--soft);padding:56px 20px}
+.cart-total{display:flex;justify-content:space-between;margin:0 0 14px;padding:0;border:none;
+  font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink)}
+.cart-checkout{width:100%}
+
+/* Reservation form in the cart drawer (js/common/reserve.js) */
+.reserve-form{display:grid;gap:14px}
+.reserve-form__title{font-family:var(--disp);font-size:1.35rem;font-weight:600;color:var(--ink);margin:0}
+.reserve-form__box{font-size:.88rem;color:var(--ink2);margin:4px 0 0}
+.reserve-form__field{display:grid;gap:6px;font-size:.85rem;font-weight:500;color:var(--ink2)}
+.reserve-form__field small{font-size:inherit;font-weight:400;color:var(--soft)}
+.reserve-form input,.reserve-form select{width:100%;border:1.5px solid var(--rule);background:#FFFCF6;color:var(--ink);
+  border-radius:12px;padding:12px 14px;font-family:inherit;font-size:.97rem}
+.reserve-form input:focus,.reserve-form select:focus{outline:none;border-color:var(--terra)}
+.reserve-form select:invalid{color:var(--soft)}
+.reserve-form__submit,.reserve-form__back{width:100%}
+.reserve-form .site-smallprint{margin:0}
+.reserve-done{padding:48px 8px;text-align:center}
+.reserve-done__title{font-family:var(--disp);font-size:1.5rem;font-weight:600;color:var(--terra);margin:0 0 10px}
+.reserve-done p{color:var(--ink2)}
+
+/* Legal panel (js/common/legal.js) */
+.legal-body h4{margin:22px 0 8px;font-size:1rem}
+.legal-body h4:first-child{margin-top:0}
+.legal-body p,.legal-body li{font-size:.92rem;color:var(--ink2);line-height:1.6}
+.legal-body ul{padding-left:18px;margin:8px 0}
+.legal-body p.legal-body__draft{font-size:.8rem;color:var(--terra);border:1px solid var(--rule);border-radius:10px;
+  padding:10px 12px;background:var(--tint)}
+
+/* ---------- Flavour name images and brand words (shared by pages and cart) ---------- */
+.flavour-name-img{display:block;height:1em;width:auto;max-width:100%;object-fit:contain;object-position:left center}
+.cart-item__name .flavour-name-img{height:14px;margin-bottom:3px}
+.brand-word{font-family:var(--brand);font-weight:400;font-size:1.2rem;letter-spacing:.02em;text-transform:uppercase;color:var(--crouton);line-height:1}
+.cart-item .brand-word{font-size:.95rem}
+
+/* ---------- Toast (partials/drawers.html) ---------- */
+.site-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,260%);opacity:0;background:var(--ink);
+  color:var(--paper);padding:14px 26px;border-radius:999px;z-index:200;font-size:.93rem;
+  transition:transform .3s cubic-bezier(.3,.9,.4,1)}
+.site-toast.is-visible{transform:translate(-50%,0);opacity:1}
