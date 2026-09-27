@@ -1,13 +1,11 @@
 /* Reservations: early sign-ups, no payment taken.
-   Used by the cart drawer (reserve the box you built) and the early-subscriber form.
+   Used by the cart drawer: the visitor reserves the box they built.
 
    Where reservations go is set once, in site.config.json, as WAITLIST_URL:
    the Google Sheet web app URL (see google-sheet-script.gs), a form service such as Formspree,
    or the FITO back end once it exists.
    Each reservation is sent as one flat JSON object, so any service can list it or email it.
    While WAITLIST_URL is empty the site is in preview mode: reservations stay in this browser only. */
-const AREA_CHOICES=[['dubai','Dubai'],['abu-dhabi','Abu Dhabi'],['sharjah','Sharjah'],['other-uae','Another emirate'],['outside-uae','Outside the UAE']];
-const areaLabel=v=>(AREA_CHOICES.find(a=>a[0]===v)||['',v])[1];
 /* Delivery areas in Dubai, picked from a list so every address can be routed. */
 const DUBAI_AREAS=['Al Barari','Al Barsha','Al Furjan','Al Jaddaf','Al Karama','Al Quoz','Al Safa','Al Sufouh','Al Wasl','Arabian Ranches','Bur Dubai','Business Bay','City Walk','Damac Hills','Deira','DIFC','Discovery Gardens','Downtown Dubai','Dubai Creek Harbour','Dubai Hills Estate','Dubai Marina','Dubai Silicon Oasis','Dubai Sports City','Emirates Hills','International City','JBR','JLT','JVC','Jumeirah','Jumeirah Golf Estates','Meadows','Meydan','Mirdif','Motor City','Mudon','Nad Al Sheba','Oud Metha','Palm Jumeirah','Satwa','Sobha Hartland','Springs','The Greens','The Lakes','The Views','Tilal Al Ghaf','Town Square','Umm Suqeim'];
 const escHtml=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -36,7 +34,7 @@ function boxFields(b){
   FLAVOURS.forEach(x=>{f[x.name]=b.items[x.id]||0;});
   TOPPINGS.forEach(t=>{f[t.name]=(b.tops||{})[t.id]||0;});
   f.price_per_box_aed=Math.round(b.total*100)/100;
-  f.first_delivery=fmt(new Date(b.first)); f.time_slot=b.slot||'';
+  f.first_delivery=fmtLong(new Date(b.first)); f.time_slot=b.slot||'';
   return f;
 }
 
@@ -49,7 +47,7 @@ function showReserveForm(){
   body.innerHTML=`<form class="reserve-form" id="reserveForm">
     <div>
       <p class="reserve-form__title">Reserve your ${sub?'soupscription':'box'}</p>
-      <p class="reserve-form__box">${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''} · ${sub?'first box':'delivered'} ${fmt(new Date(box.first))}, ${box.slot}</p>
+      <p class="reserve-form__box">${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
     </div>
     <label class="reserve-form__field">Full name<input id="rName" autocomplete="name" required></label>
     <label class="reserve-form__field">Phone (WhatsApp)<input id="rPhone" type="tel" autocomplete="tel" placeholder="+971 5X XXX XXXX" required></label>
@@ -73,7 +71,7 @@ function showReserveForm(){
         box.reserved=true; saveBox();
         const first=name.split(' ')[0];
         body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">You're on the list${first?', '+escHtml(first):''}.</p><p>${inDubai
-          ? `We've saved your ${sub?'soupscription':'box'} for ${fmt(new Date(box.first))}, ${box.slot}. Before then we'll email you a payment link and send it on WhatsApp. Nothing is charged until you pay it.`
+          ? `We've saved your ${sub?'soupscription':'box'} for ${fmtLong(new Date(box.first))}, ${box.slot}. Before then we'll email you a payment link and send it on WhatsApp. Nothing is charged until you pay it.`
           : `We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.`}</p></div>`;
       })
       .catch(()=>{btn.disabled=false;btn.textContent='Reserve, pay later';toast("That didn't go through. Please try again.");});

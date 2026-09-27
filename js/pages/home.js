@@ -254,18 +254,8 @@ document.getElementById('addBtn').onclick=()=>{
   if(n<MIN) return;
   syncBox();openDrawer();showReserveForm();
 };
-document.getElementById('fform').onsubmit=e=>{
-  e.preventDefault();
-  const form=document.getElementById('fform');
-  const v=document.getElementById('femail').value.trim(); if(!v) return;
-  const area=document.getElementById('farea').value; if(!area) return;
-  const btn=form.querySelector('button'); btn.disabled=true; btn.textContent='Reserving…';
-  sendReservation({source:'Early subscriber form',email:v,lives_in:areaLabel(area)}).then(()=>{
-  form.innerHTML = area==='dubai'
-    ? `<p class="waitlist-form__done">You're on the list. We'll email you before 7 November to confirm your first box. Nothing is charged until then.</p>`
-    : `<p class="waitlist-form__done">Thank you! We only deliver in Dubai for now, so we've noted where you are and will tell you as soon as FITO reaches you.</p>`;
-  }).catch(()=>{btn.disabled=false;btn.textContent='Reserve my place';toast("That didn't go through. Please try again.");});
-};
+// The early subscriber button opens the builder on a soupscription, since the perks come with one.
+document.getElementById('earlyCta').addEventListener('click',()=>{mode='sub';setSeg();render();});
 
 const REVIEWS=[
   ["I am literally just sitting down having my bowl of Fito. And omg. I have no notes.","Derv"],

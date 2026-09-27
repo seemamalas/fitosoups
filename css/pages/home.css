@@ -258,17 +258,7 @@
 .early-subs__perk{font-size:.95rem;color:var(--ink2);padding-left:22px;position:relative}
 .early-subs__perk::before{content:"✦";position:absolute;left:0;color:var(--terra)}
 .early-subs__note{text-align:left;margin-top:14px;color:var(--soft)}
-.waitlist-form{display:flex;gap:10px;flex-wrap:wrap}
-.waitlist-form input{flex:1 1 250px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);
-  border-radius:999px;padding:14px 20px;font-family:inherit;font-size:.97rem}
-.waitlist-form input::placeholder{color:var(--soft)}
-.waitlist-form select{flex:0 1 210px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:999px;padding:14px 18px;font-family:inherit;font-size:.97rem}
-.waitlist-form select:invalid{color:var(--soft)}
-.waitlist-form select:focus{outline:none;border-color:var(--terra)}
-@media(max-width:600px){.waitlist-form input,.waitlist-form select{flex:1 1 100%}}
-.waitlist-form input:focus{outline:none;border-color:var(--terra)}
-.waitlist-form .site-btn{background:var(--terra);color:#fff}
-.waitlist-form__done{color:var(--terra);margin:0}
+.early-subs__cta{display:inline-block}
 
 /* Story details: the FITO name line and the Made in Dubai badge */
 .home-story__name-line{margin-top:4px}

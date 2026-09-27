@@ -24,7 +24,7 @@
 *{box-sizing:border-box}
 img{max-width:100%}
 [hidden]:not([hidden=until-found i]){display:none!important}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:76px} /* in-page links land below the sticky menu */
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
   font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
 svg{display:block;max-width:100%;height:auto}
