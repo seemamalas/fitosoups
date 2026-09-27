@@ -204,10 +204,11 @@ function render(){
   else{btn.disabled=false;btn.textContent=mode==='sub'?'Reserve my soupscription':'Reserve this box';}
   renderSizes();
   renderBox();
+  syncBox();
   const dc=document.getElementById('dockCount'), ds2=document.getElementById('dockSub'), db=document.getElementById('dockBtn');
   if(dc){
-    dc.textContent = n ? `${n} pack${n>1?'s':''} · ${money(total)}` : 'Your box is empty';
-    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : `about ${n*SERV} bowls`;
+    dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
+    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : `${money(total)} · about ${n*SERV} bowls`;
     db.textContent = n>=MIN ? 'Reserve' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
@@ -237,14 +238,21 @@ function render(){
   new IntersectionObserver(es=>{ sumVis=es[0].isIntersecting; upd(); },{threshold:0.15}).observe(sum);
   document.getElementById('dockBtn').onclick=()=>sum.scrollIntoView({behavior:'smooth',block:'start'});
 })();
+// The cart always mirrors the builder, so the Box count in the header goes up and down with every tap.
+// A reservation already made stays marked only while the box is exactly the same.
+function syncBox(){
+  const n=Object.values(qty).reduce((a,b)=>a+b,0);
+  const tt=TOPPINGS.reduce((a,t)=>a+tops[t.id]*t.price,0);
+  if(!n&&!tt){ if(box){box=null;saveBox();} updateCart(); return; }
+  const pct=mode==='sub'?discountFor(n):0, del=delFor(mode);
+  const next={mode,items:{...qty},tops:{...tops},packs:n,del,total:n*PRICE*(1-pct)+tt+del,pct,freq,slot,first:SATS[firstIdx].toISOString()};
+  if(box&&box.reserved&&JSON.stringify({...box,reserved:undefined})===JSON.stringify(next)) next.reserved=true;
+  box=next; saveBox(); updateCart();
+}
 document.getElementById('addBtn').onclick=()=>{
   const n=Object.values(qty).reduce((a,b)=>a+b,0);
   if(n<MIN) return;
-  const pct=mode==='sub'?discountFor(n):0;
-  const tt=TOPPINGS.reduce((a,t)=>a+tops[t.id]*t.price,0);
-  const del=delFor(mode);
-  box={mode,items:{...qty},tops:{...tops},packs:n,del,total:n*PRICE*(1-pct)+tt+del,pct,freq,slot,first:SATS[firstIdx].toISOString()};
-  saveBox();updateCart();openDrawer();showReserveForm();
+  syncBox();openDrawer();showReserveForm();
 };
 document.getElementById('fform').onsubmit=e=>{
   e.preventDefault();
@@ -285,5 +293,9 @@ document.addEventListener('fito:box-emptied',()=>{
 });
 
 // Restore a box saved earlier in this browser (cart.js has already loaded it).
-if(box&&box.items){qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';}
+if(box&&box.items){
+  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';
+  if(box.slot){slot=box.slot;document.getElementById('slot').value=slot;}
+  const fi=SATS.findIndex(d=>d.toISOString()===box.first); if(fi>=0){firstIdx=fi;fd.value=fi;}
+}
 setSeg();render();updateCart();

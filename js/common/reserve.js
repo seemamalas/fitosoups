@@ -42,7 +42,7 @@ function boxFields(b){
 
 /* Shows the reservation form in the cart drawer, for the box in the cart. */
 function showReserveForm(){
-  if(!box) return;
+  if(!box||box.packs<MIN) return;
   const body=document.getElementById('dbody'), foot=document.getElementById('dfoot');
   const sub=box.mode==='sub';
   foot.hidden=true;

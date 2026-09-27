@@ -38,7 +38,10 @@ function updateCart(){
     ? `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · cancel anytime`
     : 'One-time box · no commitment';
   if(box.reserved) document.getElementById('dTerms').textContent='Reserved. Your payment link comes by email and WhatsApp before delivery.';
-  document.getElementById('checkout').textContent=box.reserved?'Update my reservation':'Reserve, pay later';
+  const short=box.packs<MIN, co=document.getElementById('checkout');
+  co.disabled=short;
+  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to reserve`:box.reserved?'Update my reservation':'Reserve, pay later';
+  if(short) document.getElementById('dTerms').textContent='Four packs minimum, then as many as you like.';
   body.querySelector('#clearBox').onclick=()=>{
     box=null;
     saveBox();

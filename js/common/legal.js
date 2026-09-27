@@ -1,9 +1,10 @@
 /* Terms, privacy and accessibility panels, opened from the footer links (data-legal="..."). */
 const LEGAL={
  terms:{t:'Terms & Conditions',b:`
-<p class="legal-body__draft">Draft. To be reviewed before FITO takes its first paid order.</p>
 <h4>Who we are</h4>
 <p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on Instagram at @fitosoups.</p>
+<h4>Reservations</h4>
+<p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us.</p>
 <h4>Ordering</h4>
 <p>A pack contains four frozen soup cubes, about two servings. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
 <h4>Subscriptions</h4>
@@ -17,7 +18,6 @@ const LEGAL={
 <h4>Law</h4>
 <p>These terms are governed by the laws of the United Arab Emirates.</p>`},
  privacy:{t:'Privacy Policy',b:`
-<p class="legal-body__draft">Draft. To be reviewed before FITO takes its first paid order.</p>
 <h4>What we collect</h4>
 <p>Your name, delivery address, phone number, email address and what you ordered. Nothing else.</p>
 <h4>Why</h4>
@@ -27,11 +27,10 @@ const LEGAL={
 <h4>Sharing</h4>
 <p>We do not sell your data. We share only what a delivery needs, and only with a delivery partner if we use one. Payment details are handled by Stripe under its own privacy policy.</p>
 <h4>Keeping it</h4>
-<p>We keep order records while your account is active and for as long as UAE tax rules require after that.</p>
+<p>Reservations are kept in a private spreadsheet that only FITO can open. We keep order records while your account is active and for as long as UAE tax rules require after that.</p>
 <h4>Your choices</h4>
 <p>Message us on Instagram at @fitosoups to see, correct or delete the information we hold about you.</p>`},
  access:{t:'Accessibility',b:`
-<p class="legal-body__draft">Draft. Reviewed by eye, not yet audited.</p>
 <h4>What we aim for</h4>
 <p>This site is built to be usable with a keyboard, with a screen reader, and at large text sizes, working towards WCAG 2.1 level AA.</p>
 <h4>What is in place</h4>

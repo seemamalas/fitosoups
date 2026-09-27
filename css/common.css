@@ -49,6 +49,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .site-btn:active{transform:translateY(1px)}
 .site-btn--line{background:none;color:var(--ink);border:1.5px solid var(--rule)}
 .site-btn--line:hover{border-color:var(--ink);filter:none}
+.site-btn:disabled{background:var(--tint2);color:var(--soft);border-color:transparent;cursor:not-allowed;filter:none;transform:none}
 
 /* Small print under buttons and forms */
 .site-smallprint{font-size:.8rem;color:var(--soft);margin-top:12px;text-align:center;line-height:1.55}
@@ -148,8 +149,6 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .legal-body h4:first-child{margin-top:0}
 .legal-body p,.legal-body li{font-size:.92rem;color:var(--ink2);line-height:1.6}
 .legal-body ul{padding-left:18px;margin:8px 0}
-.legal-body p.legal-body__draft{font-size:.8rem;color:var(--terra);border:1px solid var(--rule);border-radius:10px;
-  padding:10px 12px;background:var(--tint)}
 
 /* ---------- Flavour name images and brand words (shared by pages and cart) ---------- */
 .flavour-name-img{display:block;height:1em;width:auto;max-width:100%;object-fit:contain;object-position:left center}
