@@ -14,8 +14,17 @@ const escHtml=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
    opened on a laptop, keep them in the browser, so test clicks never land in the sheet. */
 const ON_LIVE_SITE=(()=>{try{const h=s=>s.replace(/^www\./,'');return h(location.hostname)===h(new URL(SITE_URL).hostname);}catch(_){return false;}})();
 
+/* Where the visitor came from, such as ?ref=card on the printed business cards.
+   Remembered in this browser for 30 days, so a reservation made on a later visit still counts. */
+const VISIT_REF=(()=>{try{
+  const r=(new URLSearchParams(location.search).get('ref')||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30);
+  if(r){localStorage.setItem('fito_ref',JSON.stringify({ref:r,at:Date.now()}));return r;}
+  const saved=JSON.parse(localStorage.getItem('fito_ref')||'null');
+  return saved&&Date.now()-saved.at<30*864e5?saved.ref:'';
+}catch(_){return '';}})();
+
 function sendReservation(fields){
-  const data={...fields,submitted_at:new Date().toISOString(),page:location.pathname};
+  const data={...fields,ref:VISIT_REF,submitted_at:new Date().toISOString(),page:location.pathname};
   if(!WAITLIST_URL||!ON_LIVE_SITE){
     try{const all=JSON.parse(localStorage.getItem('fito_reservations')||'[]');all.push(data);localStorage.setItem('fito_reservations',JSON.stringify(all));}catch(_){}
     return Promise.resolve({preview:true});
