@@ -238,15 +238,21 @@
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .home-reviews__track{display:flex;gap:16px;width:max-content;animation:home-reviews-slide 46s linear infinite}
-.home-reviews__marquee:hover .home-reviews__track{animation-play-state:paused}
+/* Pause on hover only where there is a real mouse. On phones a tap "sticks" as hover and stopped the reviews. */
+@media (hover:hover) and (pointer:fine){.home-reviews__marquee:hover .home-reviews__track{animation-play-state:paused}}
 @keyframes home-reviews-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){
-  .home-reviews__track{animation:none;overflow-x:auto;width:100%;padding-bottom:8px}
+/* Phones, tablets and reduced motion: no moving strip, just a row you swipe through. */
+@media (prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){
+  .home-reviews__track{animation:none;overflow-x:auto;width:100%;padding:0 4px 10px;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:thin;
+    box-sizing:border-box;padding:0 20px 10px;scroll-padding:0 20px}
   .home-reviews__marquee{mask-image:none;-webkit-mask-image:none}
 }
 .review-card{background:var(--tint);border-radius:16px;padding:22px 24px;width:330px;flex:0 0 330px}
 .review-card p{font-family:var(--disp);font-size:1.02rem;line-height:1.5;color:var(--ink);margin:0 0 12px}
 .review-card__who{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+@media (prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.review-card{scroll-snap-align:start;margin:0}}
+@media (max-width:480px){.review-card{width:78vw;flex-basis:78vw}} /* the next card peeks in, so people know to swipe */
 
 /* ---------- Early subscribers and waitlist form ---------- */
 .early-subs{background:var(--tint);color:var(--ink);border-radius:22px;padding:52px 48px}

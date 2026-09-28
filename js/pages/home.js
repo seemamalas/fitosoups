@@ -295,7 +295,9 @@ const REVIEWS=[
 const track=document.getElementById('track');
 if(track){
   const cards=REVIEWS.map(([q,w])=>`<figure class="review-card"><p>“${q}”</p><figcaption class="review-card__who">${w}</figcaption></figure>`).join('');
-  track.innerHTML=cards+cards;
+  // The moving strip needs the cards twice to loop. Where visitors swipe instead, show each card once.
+  const swipe=matchMedia('(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse)').matches;
+  track.innerHTML=swipe?cards:cards+cards;
 }
 
 // When the visitor empties their box from the cart drawer, reset the builder too.

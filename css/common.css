@@ -95,7 +95,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .site-footer__logo{height:30px;width:auto;margin-bottom:16px}
 .site-footer__tagline,.site-footer__copy{margin:0}
 .site-footer a{color:var(--ink2);text-decoration:none;display:block;margin-bottom:8px}
-.site-footer a.site-social-link{display:inline-flex}
+.site-footer a.site-social-link{display:flex}
 .site-footer a:hover{color:var(--terra)}
 .site-footer h4{font-family:var(--ui);font-size:.77rem;font-weight:600;letter-spacing:.1em;
   text-transform:uppercase;color:var(--soft);margin:0 0 12px}
