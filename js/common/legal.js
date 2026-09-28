@@ -2,7 +2,7 @@
 const LEGAL={
  terms:{t:'Terms & Conditions',b:`
 <h4>Who we are</h4>
-<p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on WhatsApp at +971 55 605 8152 or on Instagram at @fitosoups.</p>
+<p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups.</p>
 <h4>Reservations</h4>
 <p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us.</p>
 <h4>Ordering</h4>
@@ -29,7 +29,7 @@ const LEGAL={
 <h4>Keeping it</h4>
 <p>Reservations are kept in a private spreadsheet that only FITO can open. We keep order records while your account is active and for as long as UAE tax rules require after that.</p>
 <h4>Your choices</h4>
-<p>Message us on WhatsApp at +971 55 605 8152 or on Instagram at @fitosoups to see, correct or delete the information we hold about you.</p>`},
+<p>Message us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups to see, correct or delete the information we hold about you.</p>`},
  access:{t:'Accessibility',b:`
 <h4>What we aim for</h4>
 <p>This site is built to be usable with a keyboard, with a screen reader, and at large text sizes, working towards WCAG 2.1 level AA.</p>
