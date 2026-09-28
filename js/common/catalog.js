@@ -1,5 +1,7 @@
 /* Products, prices and delivery rules. Shared by the box builder and the cart. */
 const PRICE=45, MIN=4, CUBES=4, SERV=2, DELIVERY=15;
+// Deliveries per time slot. The sheet sends the live number back, so it can change there too.
+const SLOT_LIMIT=6;
 // Delivery: free for early subscribers (the first fifty), AED 15 on every other box.
 const delFor=m=>m==='sub'?0:DELIVERY;
 

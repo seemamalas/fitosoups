@@ -26,9 +26,31 @@ function scheduleDates(){
 
 const fd=document.getElementById('firstDate');
 fd.innerHTML=SATS.map((d,i)=>`<option value="${i}">${fmt(d)}</option>`).join('');
-fd.onchange=()=>{ firstIdx=+fd.value; render(); };
+fd.onchange=()=>{ firstIdx=+fd.value; applySlots(); };
 let slot=document.getElementById('slot').value;
 document.getElementById('slot').onchange=e=>{ slot=e.target.value; render(); };
+
+// Each time slot takes SLOT_LIMIT deliveries. On the live site the sheet reports how many are
+// already booked (soupscriptions repeat every 4 weeks, so they count on every later Saturday too).
+// Full slots are greyed out, and a Saturday with every slot full is greyed out as well.
+let slotCounts={}, slotLimit=SLOT_LIMIT;
+const slotLeft=(i,label)=>slotLimit-(slotCounts[isoDay(SATS[i])+'|'+label]||0);
+function applySlots(){
+  const sel=document.getElementById('slot'), labels=[...sel.options].map(o=>o.value);
+  [...fd.options].forEach((o,i)=>{ const full=labels.every(l=>slotLeft(i,l)<=0); o.disabled=full; o.textContent=fmt(SATS[i])+(full?' (full)':''); });
+  if(fd.options[firstIdx].disabled){ const n=[...fd.options].findIndex(o=>!o.disabled); if(n>=0){ firstIdx=n; fd.value=n; } }
+  [...sel.options].forEach(o=>{ const left=slotLeft(firstIdx,o.value); o.disabled=left<=0; o.textContent=o.value+(left<=0?' (full)':left<=2?` (${left} left)`:''); });
+  const cur=sel.options[sel.selectedIndex];
+  if(cur&&cur.disabled){ const o=[...sel.options].find(x=>!x.disabled); if(o){ slot=o.value; sel.value=o.value; } }
+  render();
+}
+function loadSlots(){
+  if(!WAITLIST_URL||!ON_LIVE_SITE) return;
+  window.fitoSlots=d=>{ if(d&&d.counts){ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; applySlots(); } };
+  const s=document.createElement('script');
+  s.src=WAITLIST_URL+'?action=slots&dates='+SATS.map(isoDay).join(',')+'&callback=fitoSlots&t='+Date.now();
+  s.async=true; document.head.appendChild(s);
+}
 
 document.getElementById('eqArt').innerHTML=
   `<div class="pack-explainer__cubes">${[0,1,2,3].map(()=>cube('#D3803C',44)).join('')}</div>
@@ -288,4 +310,4 @@ if(box&&box.items){
   if(box.slot){slot=box.slot;document.getElementById('slot').value=slot;}
   const fi=SATS.findIndex(d=>d.toISOString()===box.first); if(fi>=0){firstIdx=fi;fd.value=fi;}
 }
-setSeg();render();updateCart();
+setSeg();render();updateCart();loadSlots();

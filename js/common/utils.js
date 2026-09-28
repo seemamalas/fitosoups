@@ -13,3 +13,5 @@ const money=n=>'AED '+n.toLocaleString('en-AE',{maximumFractionDigits:0});
 const fmt=d=>d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
 /* Full date for sentences, e.g. "Saturday 7 November 2026". */
 const fmtLong=d=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+/* Calendar day as YYYY-MM-DD in the visitor's own time zone, used to match delivery slots. */
+const isoDay=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;

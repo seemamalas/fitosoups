@@ -34,7 +34,7 @@ function boxFields(b){
   FLAVOURS.forEach(x=>{f[x.name]=b.items[x.id]||0;});
   TOPPINGS.forEach(t=>{f[t.name]=(b.tops||{})[t.id]||0;});
   f.price_per_box_aed=Math.round(b.total*100)/100;
-  f.first_delivery=fmtLong(new Date(b.first)); f.time_slot=b.slot||'';
+  f.first_delivery=fmtLong(new Date(b.first)); f.first_delivery_iso=isoDay(new Date(b.first)); f.time_slot=b.slot||'';
   return f;
 }
 
