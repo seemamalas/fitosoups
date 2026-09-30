@@ -6,56 +6,122 @@ let mode='sub',freq=4,firstIdx=0,
     qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0])),
     tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
 
-// Deliveries run on Saturdays. Offer the next four, starting 5+ days out,
-// and never before launch day: the first boxes go out Saturday 7 November 2026.
-const LAUNCH=new Date(2026,10,7);
-function nextSaturdays(n){
-  const out=[], d=new Date(); d.setHours(0,0,0,0);
-  d.setDate(d.getDate()+5);
-  if(d<LAUNCH) d.setTime(LAUNCH.getTime());
-  while(d.getDay()!==6) d.setDate(d.getDate()+1);
-  for(let i=0;i<n;i++){ out.push(new Date(d)); d.setDate(d.getDate()+7); }
+// The delivery calendar. Every delivery day (rules in catalog.js) from a week after today,
+// never before launch day, for the next four weeks.
+function deliveryDays(){
+  const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+LEAD_DAYS);
+  if(d<LAUNCH_DAY) d.setTime(LAUNCH_DAY.getTime());
+  const end=new Date(d); end.setDate(end.getDate()+BOOK_AHEAD_DAYS-1);
+  const out=[];
+  for(const x=new Date(d);x<=end;x.setDate(x.getDate()+1)) if(DAY_SLOTS[x.getDay()]) out.push(new Date(x));
   return out;
 }
-const SATS=nextSaturdays(4);
+const DAYS=deliveryDays();
 function scheduleDates(){
-  const start=SATS[firstIdx], out=[start];
+  const start=DAYS[firstIdx], out=[start];
   for(let i=1;i<3;i++){ const d=new Date(start); d.setDate(d.getDate()+freq*7*i); out.push(d); }
   return out;
 }
-
-const fd=document.getElementById('firstDate');
-fd.innerHTML=SATS.map((d,i)=>`<option value="${i}">${fmt(d)}</option>`).join('');
-fd.onchange=()=>{ firstIdx=+fd.value; applySlots(); };
-let slot=document.getElementById('slot').value;
-document.getElementById('slot').onchange=e=>{ slot=e.target.value; render(); };
+let slot=DAY_SLOTS[DAYS[0].getDay()][0];
 
 // Each time slot takes SLOT_LIMIT deliveries. On the live site the sheet reports how many are
-// already booked (soupscriptions repeat every 4 weeks, so they count on every later Saturday too).
-// Full slots are greyed out, and a Saturday with every slot full is greyed out as well.
+// already booked. A soupscription needs room on its first day and when it comes back 4 and 8 weeks
+// later; a day with every slot full is crossed out. The sheet makes the final check when someone reserves.
 let slotCounts={}, slotLimit=SLOT_LIMIT;
-const slotLeft=(i,label)=>slotLimit-(slotCounts[isoDay(SATS[i])+'|'+label]||0);
+function slotLeft(i,label){
+  const d=DAYS[i]; if(!DAY_SLOTS[d.getDay()].includes(label)) return 0;
+  return Math.min(...slotDays(mode,d).map(x=>slotLimit-(slotCounts[isoDay(x)+'|'+label]||0)));
+}
+const dayOpen=i=>DAY_SLOTS[DAYS[i].getDay()].some(l=>slotLeft(i,l)>0);
+const monthOf=d=>new Date(d.getFullYear(),d.getMonth(),1);
+let calMonth=monthOf(DAYS[0]);
+
+// Keeps the picked day and time on something still free, then redraws.
 function applySlots(){
-  const sel=document.getElementById('slot'), labels=[...sel.options].map(o=>o.value);
-  [...fd.options].forEach((o,i)=>{ const full=labels.every(l=>slotLeft(i,l)<=0); o.disabled=full; o.textContent=fmt(SATS[i])+(full?' (full)':''); });
-  if(fd.options[firstIdx].disabled){ const n=[...fd.options].findIndex(o=>!o.disabled); if(n>=0){ firstIdx=n; fd.value=n; } }
-  [...sel.options].forEach(o=>{ const left=slotLeft(firstIdx,o.value); o.disabled=left<=0; o.textContent=o.value+(left<=0?' (full)':left<=2?` (${left} left)`:''); });
-  const cur=sel.options[sel.selectedIndex];
-  if(cur&&cur.disabled){ const o=[...sel.options].find(x=>!x.disabled); if(o){ slot=o.value; sel.value=o.value; } }
-  render();
+  if(!dayOpen(firstIdx)){ // the next open day after the one they had, or else the first open one
+    let n=DAYS.findIndex((_,i)=>i>firstIdx&&dayOpen(i)); if(n<0) n=DAYS.findIndex((_,i)=>dayOpen(i));
+    if(n>=0){ firstIdx=n; calMonth=monthOf(DAYS[n]); } }
+  const labels=DAY_SLOTS[DAYS[firstIdx].getDay()];
+  if(!labels.includes(slot)||slotLeft(firstIdx,slot)<=0) slot=labels.find(l=>slotLeft(firstIdx,l)>0)||labels[0];
+  drawCalendar(); drawTimes(); render();
 }
+function drawCalendar(){
+  const y=calMonth.getFullYear(), m=calMonth.getMonth();
+  const lead=(new Date(y,m,1).getDay()+6)%7, dim=new Date(y,m+1,0).getDate();
+  const firstM=monthOf(DAYS[0]), lastM=monthOf(DAYS[DAYS.length-1]);
+  let cells='';
+  for(let i=0;i<lead;i++) cells+='<span class="cal__cell"></span>';
+  for(let n=1;n<=dim;n++){
+    const d=new Date(y,m,n), i=DAYS.findIndex(x=>x.getTime()===d.getTime());
+    if(i<0){ cells+=`<span class="cal__cell cal__day is-off">${n}</span>`; continue; }
+    const open=dayOpen(i), on=i===firstIdx;
+    cells+=`<button type="button" class="cal__cell cal__day${on?' is-selected':''}${open?'':' is-full'}" data-day="${i}"${open?'':' disabled'} aria-pressed="${on}" aria-label="${fmtLong(d)}${open?'':', full'}">${n}</button>`;
+  }
+  document.getElementById('cal').innerHTML=`<div class="cal__head">
+      <button type="button" class="cal__nav" data-nav="-1"${calMonth<=firstM?' disabled':''} aria-label="Previous month">‹</button>
+      <span class="cal__month">${calMonth.toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</span>
+      <button type="button" class="cal__nav" data-nav="1"${calMonth>=lastM?' disabled':''} aria-label="Next month">›</button>
+    </div>
+    <div class="cal__grid">${['M','T','W','T','F','S','S'].map(w=>`<span class="cal__wd" aria-hidden="true">${w}</span>`).join('')}${cells}</div>`;
+}
+function drawTimes(){
+  const labels=DAY_SLOTS[DAYS[firstIdx].getDay()];
+  document.getElementById('dayPicked').textContent=DAYS[firstIdx].toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('times').innerHTML=labels.map(l=>{
+    const left=slotLeft(firstIdx,l), full=left<=0, on=l===slot&&!full;
+    return `<button type="button" class="cal-time${on?' is-selected':''}" data-slot="${l}" role="radio" aria-checked="${on}"${full?' disabled':''}>
+      <span>${l}</span>${full?'<small>Full</small>':left<=2?`<small>${left} left</small>`:''}</button>`;
+  }).join('');
+}
+document.getElementById('cal').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b||b.disabled) return;
+  if(b.dataset.nav){ calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+ +b.dataset.nav,1); drawCalendar(); return; }
+  firstIdx=+b.dataset.day; applySlots();
+});
+document.getElementById('times').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b||b.disabled) return;
+  slot=b.dataset.slot; drawTimes(); render();
+});
 function loadSlots(){
-  if(!WAITLIST_URL||!ON_LIVE_SITE) return;
-  window.fitoSlots=d=>{ if(d&&d.counts){ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; applySlots(); } };
-  const s=document.createElement('script');
-  s.src=WAITLIST_URL+'?action=slots&dates='+SATS.map(isoDay).join(',')+'&callback=fitoSlots&t='+Date.now();
-  s.async=true; document.head.appendChild(s);
+  if(!WAITLIST_URL||!ON_LIVE_SITE) return Promise.resolve();
+  const days=[...new Set(DAYS.flatMap(d=>slotDays('sub',d)).map(isoDay))];
+  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; applySlots(); }).catch(()=>{});
 }
+// Fresh counts whenever someone comes back to the tab (not while the reservation form is open).
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&!drawer.classList.contains('is-open')) loadSlots(); });
+// The reservation form found the time full: take them back to the calendar with that time crossed out.
+document.addEventListener('fito:pick-slot',e=>{
+  const {day,slot:s}=e.detail||{};
+  if(day&&s) slotCounts[day+'|'+s]=Math.max(slotCounts[day+'|'+s]||0,slotLimit);
+  applySlots();
+  const sch=document.getElementById('schedule');
+  sch.scrollIntoView({behavior:'smooth',block:'center'});
+  sch.classList.remove('is-flash'); void sch.offsetWidth; sch.classList.add('is-flash');
+  loadSlots();
+});
 
 document.getElementById('eqArt').innerHTML=
   `<div class="pack-explainer__cubes">${[0,1,2,3].map(()=>cube('#D3803C',44)).join('')}</div>
    <span class="pack-explainer__sign">=</span>
-   ${bowl('#D3803C',84)}${bowl('#D3803C',84)}`;
+   <div class="pack-explainer__result">${bowl('#D3803C',84)}${bowl('#D3803C',84)}</div>`;
+// Second line of the explainer: four packs (one of each flavour, mixed) make a box.
+function packTile(c){const sq=(x,y,f)=>`<rect x="${x}" y="${y}" width="15" height="15" rx="3" fill="${f}" stroke="${INK}" stroke-width="1.6"/>`;
+  return `<svg class="pack-explainer__pack" viewBox="0 0 44 44" aria-hidden="true"><rect x="1.5" y="1.5" width="41" height="41" rx="8" fill="#fff" stroke="${INK}" stroke-opacity=".45" stroke-width="1.4"/>
+    ${sq(5.5,5.5,shade(c,22))}${sq(23.5,5.5,c)}${sq(5.5,23.5,c)}${sq(23.5,23.5,shade(c,-18))}</svg>`;}
+function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#D3803C','#6F7B4F','#AD7A22','#D3803C'];
+  const pk=(x,c)=>`<rect x="${x}" y="12" width="23" height="40" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.6"/><rect x="${x+4}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+4}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/>`;
+  return `<svg class="pack-explainer__box" viewBox="0 0 140 108" aria-hidden="true">
+    <path d="M14 30 H126 V50 H14 Z" fill="${inside}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M14 30 L4 20 L30 16 L40 30" fill="${kraft}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M126 30 L136 20 L110 16 L100 30" fill="${kraft}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+    ${cs.map((c,i)=>pk(20+i*26,c)).join('')}
+    <rect x="10" y="44" width="120" height="60" rx="5" fill="${kraft}" stroke="${INK}" stroke-width="1.8"/>
+    <rect x="42" y="62" width="56" height="24" rx="5" fill="#FBF7F0" stroke="${INK}" stroke-opacity=".5" stroke-width="1.2"/>
+    <text x="70" y="80" text-anchor="middle" font-family="Funflare, sans-serif" font-size="15" letter-spacing=".5" fill="${INK}">FITO</text></svg>`;}
+document.getElementById('boxEqArt').innerHTML=
+  `<div class="pack-explainer__cubes pack-explainer__cubes--packs">${['#D3803C','#6F7B4F','#AD7A22','#D3803C'].map(packTile).join('')}</div>
+   <span class="pack-explainer__sign">=</span>
+   <div class="pack-explainer__result">${boxGlyph()}</div>`;
 
 document.getElementById('flavCards').innerHTML=FLAVOURS.map(f=>`
   <article class="flavour-card">
@@ -132,7 +198,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <div class="box-picker-row__thumb">${cube(f.c,64)}</div>
     <div>
       <div class="box-picker-row__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
-      <div class="box-picker-row__meta">${money(PRICE)} a pack · ${CUBES} cubes · ${SERV} servings</div>
+      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack · ${CUBES}&nbsp;cubes · ${SERV}&nbsp;bowls</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${f.ing}<br><em>${f.diet.join(' · ')}${f.note?' · '+f.note:''}</em></p></details>
     </div>
     <div class="qty-stepper">
@@ -151,11 +217,11 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <span class="box-picker-row__soon-tag">Coming soon</span>
   </div>`).join('');
 
-document.getElementById('toppings').innerHTML=TOPPINGS.map(t=>`
+document.getElementById('toppings').innerHTML=`<h3 class="box-addons__title">Add-ons</h3>`+TOPPINGS.map(t=>`
   <div class="box-picker-row box-picker-row--addon">
     <div class="box-picker-row__thumb">${croutonArt(64)}</div>
     <div>
-      <div class="box-picker-row__name"><span class="brand-word">${t.name}</span> <span class="box-picker-row__optional">add-on</span></div>
+      <div class="box-picker-row__name"><span class="brand-word">${t.name}</span></div>
       <div class="box-picker-row__meta">${money(t.price)} a bag</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${t.note}<br><em>${t.allerg}</em></p></details>
     </div>
@@ -176,15 +242,15 @@ document.getElementById('toppings').addEventListener('click',e=>{
   if(p) tops[p]++; if(m&&tops[m]>0) tops[m]--;
   if(p||m) render();
 });
-document.getElementById('tSub').onclick=()=>{mode='sub';setSeg();render();};
-document.getElementById('tOne').onclick=()=>{mode='one';setSeg();render();};
+document.getElementById('tSub').onclick=()=>{mode='sub';setSeg();applySlots();};
+document.getElementById('tOne').onclick=()=>{mode='one';setSeg();applySlots();};
 function setSeg(){
   document.getElementById('tSub').setAttribute('aria-pressed',mode==='sub');
   document.getElementById('tOne').setAttribute('aria-pressed',mode==='one');
   document.getElementById('segNote').textContent = mode==='sub'
-    ? 'Your soupscription: a box every 4 weeks. Skip, pause or cancel whenever you like.'
+    ? 'Your soupscription: a box every 4 weeks. Skip, pause or cancel up to 3 days before a delivery.'
     : 'A single delivery. No commitment, no discount.';
-  document.querySelector('label[for="firstDate"]').textContent = mode==='sub' ? 'First delivery' : 'Delivery date';
+  document.getElementById('dayLabel').textContent = mode==='sub' ? 'First delivery' : 'Delivery day';
 }
 function render(){
   const n=Object.values(qty).reduce((a,b)=>a+b,0);
@@ -200,7 +266,7 @@ function render(){
   });
   const sub=n*PRICE,pct=mode==='sub'?discountFor(n):0,save=sub*pct,del=n?delFor(mode):0,total=sub-save+topTotal+del;
   document.getElementById('capLine').textContent=n
-    ?`${n} pack${n>1?'s':''} · ${n*CUBES} cubes · about ${n*SERV} bowls`+(topCount?` · ${topCount} topping${topCount>1?'s':''}`:'')
+    ?`${n} pack${n>1?'s':''} · ${n*CUBES} cubes · about ${n*SERV} bowls`+(topCount?` · ${topCount} add-on${topCount>1?'s':''}`:'')
     :'Nothing in it yet';
   const mc=document.getElementById('mixCount');
   if(mc) mc.textContent='';
@@ -220,7 +286,7 @@ function render(){
   document.getElementById('sTop').textContent=money(topTotal);
   document.getElementById('sDel').textContent=mode==='sub'?'Free for early subscribers':money(DELIVERY);
   document.getElementById('sTotal').textContent=money(total);
-  document.getElementById('sPer').textContent=n?money((sub-save)/(n*SERV))+' a serving':'';
+  document.getElementById('sPer').textContent=n?money((sub-save)/(n*SERV))+' a bowl':'';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else{btn.disabled=false;btn.textContent=mode==='sub'?'Reserve my soupscription':'Reserve this box';}
@@ -239,7 +305,7 @@ function render(){
     const ds=scheduleDates();
     sl.hidden=false;
     sl.innerHTML=`First box <b>${fmt(ds[0])}</b>, ${slot}. Then <b>${fmt(ds[1])}</b> and <b>${fmt(ds[2])}</b>. A reminder goes out three days before each delivery, and you can skip it or change the flavours.`;
-  } else { sl.hidden=false; sl.innerHTML=`Delivered <b>${fmt(SATS[firstIdx])}</b>, ${slot}.`; }
+  } else { sl.hidden=false; sl.innerHTML=`Delivered <b>${fmt(DAYS[firstIdx])}</b>, ${slot}.`; }
   const nudge=document.getElementById('nudge');
   const next=TIERS.filter(t=>t.min>n).sort((a,b)=>a.min-b.min)[0];
   if(mode==='sub'&&n>=MIN&&n<6){
@@ -249,7 +315,7 @@ function render(){
     nudge.hidden=false;
     nudge.textContent=`Add ${next.min-n} more pack${next.min-n>1?'s':''} and your saving goes from ${Math.round(pct*100)}% to ${Math.round(next.pct*100)}%.`;
   }else nudge.hidden=true;
-  document.getElementById('terms').textContent=mode==='sub'?'No payment today. Then a box every 4 weeks: skip, pause or cancel whenever you like.':'No payment today. One box, delivered once.';
+  document.getElementById('terms').textContent=mode==='sub'?'No payment today. Then a box every 4 weeks: skip, pause or cancel up to 3 days before a delivery.':'No payment today. One box, delivered once.';
 }
 (function(){
   const dock=document.getElementById('dock'), sec=document.getElementById('build'), sum=document.getElementById('summary');
@@ -267,7 +333,7 @@ function syncBox(){
   const tt=TOPPINGS.reduce((a,t)=>a+tops[t.id]*t.price,0);
   if(!n&&!tt){ if(box){box=null;saveBox();} updateCart(); return; }
   const pct=mode==='sub'?discountFor(n):0, del=delFor(mode);
-  const next={mode,items:{...qty},tops:{...tops},packs:n,del,total:n*PRICE*(1-pct)+tt+del,pct,freq,slot,first:SATS[firstIdx].toISOString()};
+  const next={mode,items:{...qty},tops:{...tops},packs:n,del,total:n*PRICE*(1-pct)+tt+del,pct,freq,slot,first:DAYS[firstIdx].toISOString()};
   if(box&&box.reserved&&JSON.stringify({...box,reserved:undefined})===JSON.stringify(next)) next.reserved=true;
   box=next; saveBox(); updateCart();
 }
@@ -309,7 +375,7 @@ document.addEventListener('fito:box-emptied',()=>{
 // Restore a box saved earlier in this browser (cart.js has already loaded it).
 if(box&&box.items){
   qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';
-  if(box.slot){slot=box.slot;document.getElementById('slot').value=slot;}
-  const fi=SATS.findIndex(d=>d.toISOString()===box.first); if(fi>=0){firstIdx=fi;fd.value=fi;}
+  const fi=DAYS.findIndex(d=>isoDay(d)===isoDay(new Date(box.first)));
+  if(fi>=0){ firstIdx=fi; calMonth=monthOf(DAYS[fi]); if(box.slot) slot=box.slot; }
 }
-setSeg();render();updateCart();loadSlots();
+setSeg();applySlots();updateCart();loadSlots();

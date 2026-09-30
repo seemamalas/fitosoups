@@ -10,9 +10,12 @@ function loadBox(){
   return box;
 }
 
-function updateCart(){
+/* Redraws the drawer. While the reservation form (or a "that time is full" message) is showing,
+   only the count in the header changes, so nothing typed is lost; pass force to redraw anyway. */
+function updateCart(force){
   document.getElementById('cartN').textContent=box?box.packs:0;
   const body=document.getElementById('dbody'),foot=document.getElementById('dfoot');
+  if(force!==true&&body.querySelector('#reserveForm,.reserve-full')) return;
   if(!box){
     body.innerHTML=`<div class="cart-empty"><p>Your box is empty.</p><a class="site-btn site-btn--line" href="${HOME_URL}#build" id="goBuild">Build a box</a></div>`;
     foot.hidden=true; body.querySelector('#goBuild').onclick=closeDrawer; return;
@@ -35,7 +38,7 @@ function updateCart(){
     +`<button class="site-btn site-btn--line cart-clear" id="clearBox">Empty the box</button>`;
   document.getElementById('dTotal').textContent=money(box.total);
   document.getElementById('dTerms').textContent=box.mode==='sub'
-    ? `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · cancel anytime`
+    ? `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · skip or cancel up to 3 days before`
     : 'One-time box · no commitment';
   if(box.reserved) document.getElementById('dTerms').textContent='Reserved. Your payment link comes by email and WhatsApp before delivery.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
@@ -50,7 +53,7 @@ function updateCart(){
   };
 }
 
-document.getElementById('checkout').onclick=showReserveForm;
+document.getElementById('checkout').onclick=()=>showReserveForm();
 
 loadBox();
 updateCart();

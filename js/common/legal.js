@@ -6,11 +6,11 @@ const LEGAL={
 <h4>Reservations</h4>
 <p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us.</p>
 <h4>Ordering</h4>
-<p>A pack contains four frozen soup cubes, about two servings. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
+<p>A pack contains four frozen soup cubes, about two bowls. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
 <h4>Subscriptions</h4>
 <p>Subscription boxes are delivered every four weeks on the slot you choose. You can skip a delivery, change flavours or cancel at any time before your box is cooked, which is three days before the delivery date. Early subscriber pricing holds for as long as the subscription stays active.</p>
 <h4>Delivery</h4>
-<p>Delivery costs AED 15 a box. For our first fifty subscribers it is free on every box, for as long as they stay subscribed. For now we deliver only within Dubai. Orders with a delivery address outside Dubai will be cancelled and refunded in full. We deliver in a freezer vehicle, inside the two hour slot you select. Someone must be there to receive the box and put it straight into a freezer. If nobody is available and the soup cannot be handed over, we cannot replace it free of charge.</p>
+<p>Delivery costs AED 15 a box. For our first fifty subscribers it is free on every box, for as long as they stay subscribed. For now we deliver only within Dubai. Orders with a delivery address outside Dubai will be cancelled and refunded in full. Deliveries run on Saturdays and Sundays (8:00 to 10:00, 13:00 to 15:00 or 19:00 to 21:00) and on Monday, Wednesday and Thursday evenings (19:00 to 21:00), and are booked at least a week ahead. We deliver in a freezer vehicle, inside the two hour slot you select. Someone must be there to receive the box and put it straight into a freezer. If nobody is available and the soup cannot be handed over, we cannot replace it free of charge.</p>
 <h4>Refunds</h4>
 <p>Food is perishable, so we do not accept returns. If anything arrives damaged, defrosted or not as described, message us within twenty four hours with a photo and we will replace it or refund it.</p>
 <h4>Allergens</h4>
@@ -23,11 +23,11 @@ const LEGAL={
 <h4>Why</h4>
 <p>To cook the right soup, deliver it to the right door, and tell you when your next box is coming. If you join the early subscriber list we will email you about the launch, and you can unsubscribe from any message.</p>
 <h4>Payment</h4>
-<p>When card payments go live they will be handled by Stripe, a licensed payment provider. Your card details go straight to Stripe, and FITO never sees or stores them.</p>
+<p>When card payments go live they will be handled by a licensed payment provider. Your card details go straight to them, and FITO never sees or stores them.</p>
 <h4>Sharing</h4>
-<p>We do not sell your data. We share only what a delivery needs, and only with a delivery partner if we use one. Payment details are handled by Stripe under its own privacy policy.</p>
+<p>We do not sell your data. We share only what a delivery needs, and only with a delivery partner if we use one. Payment details are handled by the payment provider under its own privacy policy.</p>
 <h4>Keeping it</h4>
-<p>Reservations are kept in a private spreadsheet that only FITO can open. We keep order records while your account is active and for as long as UAE tax rules require after that.</p>
+<p>Reservations are kept in a private spreadsheet that only FITO can open. We keep order records while you are a customer and for as long as UAE tax rules require after that.</p>
 <h4>Your choices</h4>
 <p>Message us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups to see, correct or delete the information we hold about you.</p>`},
  access:{t:'Accessibility',b:`
@@ -41,7 +41,7 @@ const LEGAL={
 <li>Headings follow a logical order so a screen reader can skim the page.</li>
 </ul>
 <h4>Known gaps</h4>
-<p>The scrolling band of customer messages moves on its own. It pauses on hover and on focus, and the same messages are available as plain text on request.</p>
+<p>On a computer, the band of customer messages scrolls on its own and pauses when you hover over it. On phones and tablets it stays still and you swipe through it. The same messages are available as plain text on request.</p>
 <h4>Tell us</h4>
 <p>If something on this site is hard to use, message @fitosoups and we will fix it.</p>`}
 };
