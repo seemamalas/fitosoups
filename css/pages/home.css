@@ -128,6 +128,8 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .cal-time.is-selected small{color:#F2C9A8}
 .cal-time:disabled{background:transparent;border-style:dashed;color:var(--soft);cursor:not-allowed}
 .cal-time:disabled small{color:var(--soft)}
+.cal-checking{margin:0 0 4px;font-size:.84rem;color:var(--ink2);animation:cal-pulse 1.2s ease-in-out infinite alternate}
+@keyframes cal-pulse{from{opacity:.45}to{opacity:1}}
 .box-schedule__days{font-size:.8rem;color:var(--soft);margin:16px 0 0;line-height:1.6}
 .box-schedule.is-flash{animation:sched-flash 1.6s ease-out}
 @keyframes sched-flash{0%{box-shadow:0 0 0 3px var(--terra)}100%{box-shadow:0 0 0 3px rgba(193,97,60,0)}}

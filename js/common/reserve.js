@@ -23,21 +23,24 @@ const VISIT_REF=(()=>{try{
   return saved&&Date.now()-saved.at<30*864e5?saved.ref:'';
 }catch(_){return '';}})();
 
-/* Asks the Google Sheet a question with a <script> tag (JSONP). The sheet can't answer a normal
-   cross-site request, but it can answer this way. Used for slot counts and to hear whether a
-   reservation was booked. Resolves with the sheet's answer, or fails after `ms`. */
-function askSheet(params,ms=8000){
-  return new Promise((resolve,reject)=>{
-    if(!WAITLIST_URL) return reject(new Error('no sheet'));
+/* Asks the Google Sheet a question. First as a normal request (the sheet answers with plain JSON
+   that any website may read); if the browser refuses or it's too slow, again with a <script> tag
+   (JSONP). Counts and yes/no answers only, never names. Fails if neither answers within `ms` each. */
+function askSheet(params,ms=12000){
+  if(!WAITLIST_URL) return Promise.reject(new Error('no sheet'));
+  const within=(pr,ms)=>Promise.race([pr,new Promise((_,no)=>setTimeout(()=>no(new Error('timeout')),ms))]);
+  const viaFetch=()=>fetch(WAITLIST_URL+'?'+new URLSearchParams({...params,t:Date.now()}),{cache:'no-store'})
+    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();});
+  const viaScript=()=>new Promise((resolve,reject)=>{
     const cb='fitoCb'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
     const s=document.createElement('script');
-    const done=()=>{clearTimeout(t);window[cb]=()=>{};s.remove();};
-    const t=setTimeout(()=>{done();reject(new Error('timeout'));},ms);
+    const done=()=>{window[cb]=()=>{};s.remove();};
     window[cb]=d=>{done();resolve(d);};
     s.onerror=()=>{done();reject(new Error('network'));};
     s.src=WAITLIST_URL+'?'+new URLSearchParams({...params,callback:cb,t:Date.now()});
     s.async=true; document.head.appendChild(s);
   });
+  return within(viaFetch(),ms).catch(err=>{console.warn('FITO: sheet request failed, trying again another way:',err&&err.message);return within(viaScript(),ms);});
 }
 /* How many deliveries each day and slot already has, e.g. {"2026-11-07|8:00 to 10:00": 6}. */
 function fetchSlotCounts(days){
@@ -56,7 +59,7 @@ function sendReservation(fields){
   // A Google Sheet (Apps Script web app) takes a plain-text body and does not answer cross-site,
   // so the reservation is sent blind, then the sheet is asked how it went.
   if(/script\.google\.com/.test(WAITLIST_URL)){
-    const ask=()=>askSheet({action:'status',rid},6000).then(r=>(r&&r.status)||'unknown').catch(()=>'unknown');
+    const ask=()=>askSheet({action:'status',rid},7000).then(r=>(r&&r.status)||'unknown').catch(()=>'unknown');
     return fetch(WAITLIST_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...data,rid})})
       .then(ask)
       .then(st=>st==='unknown'?new Promise(r=>setTimeout(r,1500)).then(ask):st)

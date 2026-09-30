@@ -28,6 +28,9 @@ let slot=DAY_SLOTS[DAYS[0].getDay()][0];
 // already booked. A soupscription needs room on its first day and when it comes back 4 and 8 weeks
 // later; a day with every slot full is crossed out. The sheet makes the final check when someone reserves.
 let slotCounts={}, slotLimit=SLOT_LIMIT;
+// On the live site, times can't be picked until the sheet has said which are free ('loading').
+// If the sheet can't be reached at all ('failed'), booking still works: the sheet checks again when they reserve.
+let slotsState=(WAITLIST_URL&&ON_LIVE_SITE)?'loading':'ok';
 function slotLeft(i,label){
   const d=DAYS[i]; if(!DAY_SLOTS[d.getDay()].includes(label)) return 0;
   return Math.min(...slotDays(mode,d).map(x=>slotLimit-(slotCounts[isoDay(x)+'|'+label]||0)));
@@ -67,10 +70,11 @@ function drawCalendar(){
 function drawTimes(){
   const labels=DAY_SLOTS[DAYS[firstIdx].getDay()];
   document.getElementById('dayPicked').textContent=DAYS[firstIdx].toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('times').innerHTML=labels.map(l=>{
-    const left=slotLeft(firstIdx,l), full=left<=0, on=l===slot&&!full;
-    return `<button type="button" class="cal-time${on?' is-selected':''}" data-slot="${l}" role="radio" aria-checked="${on}"${full?' disabled':''}>
-      <span>${l}</span>${full?'<small>Full</small>':left<=2?`<small>${left} left</small>`:''}</button>`;
+  const checking=slotsState==='loading';
+  document.getElementById('times').innerHTML=(checking?'<p class="cal-checking">Checking which times are still free…</p>':'')+labels.map(l=>{
+    const left=slotLeft(firstIdx,l), full=left<=0, on=l===slot&&!full&&!checking;
+    return `<button type="button" class="cal-time${on?' is-selected':''}" data-slot="${l}" role="radio" aria-checked="${on}"${full||checking?' disabled':''}>
+      <span>${l}</span>${checking?'':full?'<small>Full</small>':left<=2?`<small>${left} left</small>`:''}</button>`;
   }).join('');
 }
 document.getElementById('cal').addEventListener('click',e=>{
@@ -85,7 +89,10 @@ document.getElementById('times').addEventListener('click',e=>{
 function loadSlots(){
   if(!WAITLIST_URL||!ON_LIVE_SITE) return Promise.resolve();
   const days=[...new Set(DAYS.flatMap(d=>slotDays('sub',d)).map(isoDay))];
-  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; applySlots(); }).catch(()=>{});
+  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; slotsState='ok'; applySlots(); })
+    .catch(err=>{ console.warn('FITO: could not load which times are free:',err&&err.message);
+      if(slotsState==='loading'&&!loadSlots.retried){ loadSlots.retried=true; return loadSlots(); }
+      if(slotsState==='loading'){ slotsState='failed'; applySlots(); } });
 }
 // Fresh counts whenever someone comes back to the tab (not while the reservation form is open).
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&!drawer.classList.contains('is-open')) loadSlots(); });
@@ -289,6 +296,7 @@ function render(){
   document.getElementById('sPer').textContent=n?money((sub-save)/(n*SERV))+' a bowl':'';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
+  else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
   else{btn.disabled=false;btn.textContent=mode==='sub'?'Reserve my soupscription':'Reserve this box';}
   renderSizes();
   renderBox();
