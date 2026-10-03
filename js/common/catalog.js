@@ -1,7 +1,7 @@
 /* Products, prices and delivery rules. Shared by the box builder and the cart. */
 const PRICE=45, MIN=4, CUBES=4, SERV=2, DELIVERY=15;
 // Deliveries per time slot. The sheet sends the live number back, so it can change there too.
-const SLOT_LIMIT=6;
+const SLOT_LIMIT=4;
 // Delivery days and their time slots (0 = Sunday ... 6 = Saturday). Saturdays and Sundays have all three;
 // Mondays, Wednesdays and Thursdays the evening only; no deliveries on Tuesdays or Fridays.
 // google-sheet-script.gs has the same rules and refuses anything else.
@@ -18,7 +18,7 @@ const delFor=m=>m==='sub'?0:DELIVERY;
 const FLAVOURS=[
   {id:'caramel',name:'Caramel',c:'#D3803C',sub:'Sweet potato & butternut squash',tag:'Best seller',avail:true,
    desc:'Velvety and naturally sweet, warmed through with cinnamon and nutmeg.',
-   ing:'Sweet potato, butternut squash, red onion, honey, cinnamon, nutmeg, olive oil, salt, black pepper.',
+   ing:'Butternut squash, sweet potato, red onion, honey, cinnamon, nutmeg, olive oil, salt, black pepper.',
    diet:['Vegetarian','No gluten'],note:'Contains honey',ar:''},
   {id:'green',name:'Green Goddess',c:'#6F7B4F',sub:'Pea, courgette & broccoli',tag:'Fan favourite',avail:true,
    desc:'Bright and green, finished with a lift of lemon that keeps it fresh.',
