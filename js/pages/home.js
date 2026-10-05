@@ -115,7 +115,7 @@ document.getElementById('eqArt').innerHTML=
 function packTile(c){const sq=(x,y,f)=>`<rect x="${x}" y="${y}" width="15" height="15" rx="3" fill="${f}" stroke="${INK}" stroke-width="1.6"/>`;
   return `<svg class="pack-explainer__pack" viewBox="0 0 44 44" aria-hidden="true"><rect x="1.5" y="1.5" width="41" height="41" rx="8" fill="#fff" stroke="${INK}" stroke-opacity=".45" stroke-width="1.4"/>
     ${sq(5.5,5.5,shade(c,22))}${sq(23.5,5.5,c)}${sq(5.5,23.5,c)}${sq(23.5,23.5,shade(c,-18))}</svg>`;}
-function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#DB7814','#418344','#C0662B','#DB7814'];
+function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#DB7814','#819C35','#C0662B','#DB7814'];
   const pk=(x,c)=>`<rect x="${x}" y="12" width="23" height="40" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.6"/><rect x="${x+4}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+4}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/>`;
   return `<svg class="pack-explainer__box" viewBox="0 0 140 108" aria-hidden="true">
     <path d="M14 30 H126 V50 H14 Z" fill="${inside}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
@@ -126,7 +126,7 @@ function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#DB
     <rect x="42" y="62" width="56" height="24" rx="5" fill="#FBF7F0" stroke="${INK}" stroke-opacity=".5" stroke-width="1.2"/>
     <text x="70" y="80" text-anchor="middle" font-family="Funflare, sans-serif" font-size="15" letter-spacing=".5" fill="${INK}">FITO</text></svg>`;}
 document.getElementById('boxEqArt').innerHTML=
-  `<div class="pack-explainer__cubes pack-explainer__cubes--packs">${['#DB7814','#418344','#C0662B','#DB7814'].map(packTile).join('')}</div>
+  `<div class="pack-explainer__cubes pack-explainer__cubes--packs">${['#DB7814','#819C35','#C0662B','#DB7814'].map(packTile).join('')}</div>
    <span class="pack-explainer__sign">=</span>
    <div class="pack-explainer__result">${boxGlyph()}</div>`;
 
