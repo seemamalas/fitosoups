@@ -3,8 +3,8 @@
 
 // Cube character per flavour colour, and the Funflare flavour-name artwork per flavour id.
 const CUBEIMG={
-  '#EE8216':'assets/images/cubes/caramel.webp',
-  '#42830F':'assets/images/cubes/green-goddess.webp',
+  '#DB7814':'assets/images/cubes/caramel.webp',
+  '#418344':'assets/images/cubes/green-goddess.webp',
   '#C0662B':'assets/images/cubes/baddass.webp'
 };
 const NAMEIMG={

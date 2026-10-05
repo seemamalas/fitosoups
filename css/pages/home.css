@@ -9,8 +9,11 @@
 .home-hero__grid{display:grid;grid-template-columns:1.04fr .96fr;gap:48px;align-items:center}
 @media(max-width:900px){.home-hero__grid{grid-template-columns:1fr;gap:32px}}
 .home-hero__title{margin-bottom:20px}
-.home-hero__accent{font-family:var(--script);font-size:1em;color:var(--terra);
-  display:inline-block;line-height:.9}
+.home-hero__keep{white-space:nowrap} /* never leave "and" alone on a line */
+/* The script line sits on its own line, with a little room on the left so the
+   swash of the "r" in Parisienne is never cut off or pushed past the margin. */
+.home-hero__accent{font-family:var(--script);font-size:1.04em;color:var(--terra);
+  display:block;line-height:1.05;padding:.06em 0 0 .1em;margin-top:.02em}
 .home-hero__lede{font-size:1.13rem;color:var(--ink2);max-width:44ch;margin-bottom:28px}
 .home-hero__ctas{display:flex;gap:12px;flex-wrap:wrap}
 .home-hero__shot{margin:0}
