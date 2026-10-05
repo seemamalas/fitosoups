@@ -9,10 +9,10 @@
 
 :root{
   color-scheme:light;
-  --paper:#F5EFE3; --tint:#EDE4D3; --tint2:#E3D7C1;
+  --paper:#FFFBF7; --tint:#F6EFE6; --tint2:#E9DFCF;
   /* Paper at 99% for fixed bars and panels: iOS 26 Safari can leave part of the screen blank
      around a fully opaque fixed element. 99% looks identical and avoids it. */
-  --paper-fixed:rgba(245,239,227,.99);
+  --paper-fixed:rgba(255,251,247,.99);
   --ink:#3A2E22; --ink2:#6A5A48; --soft:#9B8C77;
   --terra:#C1613C; --sage:#6B7A3A; --gold:#E8C766;
   --rule:#DFD3BE;
