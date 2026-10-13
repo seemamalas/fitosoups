@@ -56,9 +56,9 @@ function drawCalendar(){
   for(let i=0;i<lead;i++) cells+='<span class="cal__cell"></span>';
   for(let n=1;n<=dim;n++){
     const d=new Date(y,m,n), i=DAYS.findIndex(x=>x.getTime()===d.getTime());
-    if(i<0){ cells+=`<span class="cal__cell cal__day is-off">${n}</span>`; continue; }
+    if(i<0){ cells+=`<span class="cal__cell cal__day is-off"><span class="cal__num">${n}</span></span>`; continue; }
     const open=dayOpen(i), on=i===firstIdx;
-    cells+=`<button type="button" class="cal__cell cal__day${on?' is-selected':''}${open?'':' is-full'}" data-day="${i}"${open?'':' disabled'} aria-pressed="${on}" aria-label="${fmtLong(d)}${open?'':', full'}">${n}</button>`;
+    cells+=`<button type="button" class="cal__cell cal__day${on?' is-selected':''}${open?'':' is-full'}" data-day="${i}"${open?'':' disabled'} aria-pressed="${on}" aria-label="${fmtLong(d)}${open?'':', full'}"><span class="cal__num">${n}</span></button>`;
   }
   document.getElementById('cal').innerHTML=`<div class="cal__head">
       <button type="button" class="cal__nav" data-nav="-1"${calMonth<=firstM?' disabled':''} aria-label="Previous month">‹</button>

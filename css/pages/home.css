@@ -114,11 +114,13 @@
 .cal__nav:disabled{opacity:.2;cursor:default}
 .cal__grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
 .cal__wd{font-size:.72rem;color:var(--soft);padding:2px 0 4px}
-.cal__day{aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:.92rem;font-variant-numeric:tabular-nums}
+/* The number sits in its own span, centred absolutely: Safari ignores grid centring inside a button (fixed 13 October 2026). */
+.cal__day{aspect-ratio:1;position:relative;display:block;border-radius:50%;font-size:.92rem;font-variant-numeric:tabular-nums}
+.cal__num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1}
 .cal__day.is-off{color:#CFC2AC}
 button.cal__day{border:1.5px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer;font-family:inherit;padding:0;font-weight:500}
 @media (hover:hover) and (pointer:fine){button.cal__day:hover:not(:disabled){border-color:var(--ink)}}
-button.cal__day.is-selected{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:600}
+button.cal__day.is-selected{background:#DB7814;border-color:#DB7814;color:#fff;font-weight:600}
 button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--soft);text-decoration:line-through;cursor:not-allowed}
 .box-schedule__day{font-family:var(--disp);font-weight:600;font-size:1.15rem;margin:0 0 12px;color:var(--ink)}
 .cal-times{display:flex;flex-direction:column;gap:8px;max-width:300px}
