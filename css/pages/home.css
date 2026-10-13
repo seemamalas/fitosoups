@@ -94,13 +94,12 @@
 .flavour-card__diet span{font-size:.7rem;letter-spacing:.05em;padding:4px 10px;border-radius:999px;
   background:var(--paper);color:var(--ink2);border:1px solid var(--rule)}
 .flavour-card__arabic{color:var(--soft);font-weight:400}
-@media(min-width:861px){@supports (grid-template-rows:subgrid){
-  .flavours__grid{grid-template-rows:repeat(6,auto);row-gap:0}
-  .flavour-card{display:grid;grid-row:span 6;grid-template-rows:subgrid}
-  .flavour-card__body{grid-row:1/-1;display:grid;grid-template-rows:subgrid;row-gap:0}
-  .flavour-card__ingredients{margin-top:0;display:flex;flex-direction:column}
-  .flavour-card__ingredients .flavour-card__diet{margin-top:auto}
-}}
+/* Safari stacked every line of the card on top of each other with the old subgrid
+   version (13 October 2026), so the cards now use plain flex columns in every browser.
+   A minimum height on the ingredients text keeps the three cards lined up. */
+@media(min-width:861px){
+  .flavour-card__ingredients p{min-height:4.8em}
+}
 
 /* ---------- Box builder: delivery schedule ---------- */
 /* Delivery calendar: pick a day, then a time. Weekdays only have the evening. */
