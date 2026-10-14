@@ -56,7 +56,7 @@ function updateCart(force){
   if(box.reserved) document.getElementById('dTerms').textContent='Reserved. Your payment link comes by email and WhatsApp before delivery.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
   co.disabled=short;
-  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to reserve`:box.reserved?'Update my reservation':'Reserve, pay later';
+  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to reserve`:box.chosen===false?'Choose Soupscription or One-time box':box.reserved?'Update my reservation':'Reserve, pay later';
   if(short) document.getElementById('dTerms').textContent='Four packs minimum, then as many as you like.';
   body.querySelector('#clearBox').onclick=()=>{
     box=null;
@@ -66,7 +66,11 @@ function updateCart(force){
   };
 }
 
-document.getElementById('checkout').onclick=()=>showReserveForm();
+document.getElementById('checkout').onclick=()=>{
+  // They haven't picked Soupscription or One-time box yet: send them back to choose.
+  if(box&&box.chosen===false){ closeDrawer(); document.dispatchEvent(new CustomEvent('fito:choose-mode')); return; }
+  showReserveForm();
+};
 
 loadBox();
 updateCart();

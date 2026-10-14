@@ -173,6 +173,12 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-builder__plan button[aria-pressed="true"] span{color:#B35E0E}
 @media (hover:hover) and (pointer:fine){.box-builder__plan button:hover{border-color:var(--ink)}}
 .box-builder__plan button{flex:1 1 0;min-width:0}
+/* Prepay sits first, with its saving in green so it catches the eye. */
+.box-builder__plan button.is-deal[aria-pressed="false"] span{color:var(--sage);font-weight:600}
+/* Reserve pressed before choosing: the two big buttons give a little shake. */
+.box-builder__toggle.is-nudge button{animation:fitoNudge .5s ease-in-out 2;border-color:#DB7814}
+@keyframes fitoNudge{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.box-builder__toggle.is-nudge button{animation:none}}
 .box-summary__prepay{border-top:1px dashed var(--rule);margin-top:6px}
 .box-summary__prepay[hidden]{display:none}
 #sTotRow.is-each{border-top:none;margin-top:0;padding-top:8px;font-family:var(--ui);font-weight:400;font-size:.95rem;color:var(--ink2)}

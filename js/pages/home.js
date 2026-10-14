@@ -4,6 +4,9 @@
 
 // The nudge line repeated what the box art already says, so it is off.
 const SHOW_NUDGE=false;
+// Nothing is picked when the page opens: people choose Soupscription or One-time box first,
+// and only then see how to pay. Prices show as a soupscription until they choose.
+let modeChosen=false;
 let mode='sub',plan='go',freq=4,firstIdx=0,
     qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0])),
     tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
@@ -251,7 +254,7 @@ document.getElementById('toppings').addEventListener('click',e=>{
   if(p) tops[p]++; if(m&&tops[m]>0) tops[m]--;
   if(p||m) render();
 });
-document.getElementById('tSub').onclick=()=>{mode='sub';setSeg();applySlots();};
+document.getElementById('tSub').onclick=()=>{mode='sub';modeChosen=true;document.querySelector('.box-builder__toggle').classList.remove('is-nudge');setSeg();applySlots();};
 document.getElementById('planRow').addEventListener('click',e=>{
   const b=e.target.closest('button[data-plan]'); if(!b) return;
   plan=b.dataset.plan; setSeg(); render();
@@ -263,12 +266,12 @@ function planNote(){
   const p=PLANS[plan];
   return `${p.boxes} boxes, one every 4 weeks, paid up front with an extra ${Math.round(p.extra*100)}% off. Minimum 2 boxes; stop after that and we refund the rest.`;
 }
-document.getElementById('tOne').onclick=()=>{mode='one';setSeg();applySlots();};
+document.getElementById('tOne').onclick=()=>{mode='one';modeChosen=true;document.querySelector('.box-builder__toggle').classList.remove('is-nudge');setSeg();applySlots();};
 function setSeg(){
-  document.getElementById('tSub').setAttribute('aria-pressed',mode==='sub');
-  document.getElementById('tOne').setAttribute('aria-pressed',mode==='one');
+  document.getElementById('tSub').setAttribute('aria-pressed',modeChosen&&mode==='sub');
+  document.getElementById('tOne').setAttribute('aria-pressed',modeChosen&&mode==='one');
   const sn=document.getElementById('segNote'); if(sn) sn.textContent = planNote();
-  const pr=document.getElementById('planRow'); pr.hidden = mode!=='sub';
+  const pr=document.getElementById('planRow'); pr.hidden = !(modeChosen&&mode==='sub');
   pr.querySelectorAll('button[data-plan]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.plan===plan));
   document.getElementById('dayLabel').textContent = mode==='sub' ? 'First delivery' : 'Delivery day';
 }
@@ -315,7 +318,7 @@ function render(){
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=mode!=='sub'?'Reserve this box':'Reserve my soupscription';}
+  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One-time box':mode!=='sub'?'Reserve this box':'Reserve my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
@@ -365,17 +368,26 @@ function syncBox(){
   const pct=mode==='sub'?discountFor(n):0, del=delFor(mode), total=n*PRICE*(1-pct)+tt+del;
   const pl=mode==='sub'?plan:'go', pp=PLANS[pl];
   const full=round2(total*pp.boxes), prepaid=pp.boxes?round2(full-round2(full*pp.extra)):0;
-  const next={mode,plan:pl,items:{...qty},tops:{...tops},packs:n,del,total,pct,freq,slot,first:DAYS[firstIdx].toISOString(),prepaid};
+  const next={mode,chosen:modeChosen,plan:pl,items:{...qty},tops:{...tops},packs:n,del,total,pct,freq,slot,first:DAYS[firstIdx].toISOString(),prepaid};
   if(box&&box.reserved&&JSON.stringify({...box,reserved:undefined})===JSON.stringify(next)) next.reserved=true;
   box=next; saveBox(); updateCart();
 }
 document.getElementById('addBtn').onclick=()=>{
   const n=Object.values(qty).reduce((a,b)=>a+b,0);
   if(n<MIN) return;
+  if(!modeChosen){ nudgeChoice(); return; }
   syncBox();openDrawer();showReserveForm();
 };
+// Not chosen yet: scroll back up to the two big buttons and give them a little shake.
+function nudgeChoice(){
+  const t=document.querySelector('.box-builder__toggle'); if(!t) return;
+  t.scrollIntoView({behavior:'smooth',block:'center'});
+  t.classList.remove('is-nudge'); void t.offsetWidth; t.classList.add('is-nudge');
+  setTimeout(()=>t.classList.remove('is-nudge'),1600);
+}
+document.addEventListener('fito:choose-mode',nudgeChoice);
 // The early subscriber button opens the builder on a soupscription, since the perks come with one.
-document.getElementById('earlyCta').addEventListener('click',()=>{mode='sub';setSeg();render();});
+document.getElementById('earlyCta').addEventListener('click',()=>{mode='sub';modeChosen=true;setSeg();render();});
 
 const REVIEWS=[
   ["I am literally just sitting down having my bowl of Fito. And omg. I have no notes.","Derv"],
@@ -406,7 +418,7 @@ document.addEventListener('fito:box-emptied',()=>{
 
 // Restore a box saved earlier in this browser (cart.js has already loaded it).
 if(box&&box.items){
-  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';plan=PLANS[box.plan]?box.plan:'go';
+  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';plan=PLANS[box.plan]?box.plan:'go';modeChosen=box.chosen!==false;
   const fi=DAYS.findIndex(d=>isoDay(d)===isoDay(new Date(box.first)));
   if(fi>=0){ firstIdx=fi; calMonth=monthOf(DAYS[fi]); if(box.slot) slot=box.slot; }
 }
