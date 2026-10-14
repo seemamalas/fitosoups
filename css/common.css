@@ -129,6 +129,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .cart-item__label-title--saving,.cart-item__price--saving{color:var(--sage)}
 .cart-clear{width:100%;margin-top:18px}
 .cart-empty{text-align:center;color:var(--soft);padding:56px 20px}
+.cart-reserved{color:var(--ink2);display:grid;gap:10px;line-height:1.55}
+.cart-reserved__title{font-family:var(--disp);font-weight:600;font-size:1.3rem;color:var(--ink)}
+.cart-reserved a{color:var(--terra)}
 .cart-total{display:flex;justify-content:space-between;margin:0 0 14px;padding:0;border:none;
   font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink)}
 .cart-checkout{width:100%}
@@ -144,6 +147,13 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .reserve-form input:focus,.reserve-form select:focus{outline:none;border-color:var(--terra)}
 .reserve-form select:invalid{color:var(--soft)}
 .reserve-form__submit,.reserve-form__back{width:100%}
+/* While the sheet saves a booking: a thin bar runs along the bottom of the button. */
+.reserve-form__submit.is-busy{position:relative;overflow:hidden}
+.reserve-form__submit.is-busy::after{content:"";position:absolute;left:-40%;bottom:0;height:3px;width:40%;background:var(--terra);border-radius:3px;animation:fitoBusy 1.4s ease-in-out infinite}
+@keyframes fitoBusy{from{left:-40%}to{left:100%}}
+@media (prefers-reduced-motion:reduce){.reserve-form__submit.is-busy::after{animation:none;left:0;width:100%;opacity:.5}}
+.reserve-form__wait{margin:-4px 0 0;text-align:center;font-size:.86rem;color:var(--ink2)}
+.reserve-form__wait[hidden]{display:none}
 .reserve-form .site-smallprint{margin:0}
 .reserve-done{padding:48px 8px;text-align:center}
 .reserve-done__title{font-family:var(--disp);font-size:1.5rem;font-weight:600;color:var(--terra);margin:0 0 10px}

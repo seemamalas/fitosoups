@@ -5,6 +5,12 @@
 let box=null;
 
 function saveBox(){try{localStorage.setItem('fito_box',JSON.stringify(box));}catch(_){}}
+/* After a reservation the box is emptied (so the header goes back to 0), and a one-line note of
+   what they reserved is kept, so the Box drawer can remind them until the first delivery. */
+function lastReservation(){
+  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); if(!r) return null;
+    const day=new Date(r.first); day.setDate(day.getDate()+1); return day>=new Date()?r:null;}catch(_){return null;}
+}
 function loadBox(){
   try{const r=localStorage.getItem('fito_box'); if(r) box=JSON.parse(r);}catch(_){box=null;}
   return box;
@@ -15,7 +21,12 @@ function loadBox(){
 function updateCart(force){
   document.getElementById('cartN').textContent=box?box.packs:0;
   const body=document.getElementById('dbody'),foot=document.getElementById('dfoot');
-  if(force!==true&&body.querySelector('#reserveForm,.reserve-full')) return;
+  if(force!==true&&body.querySelector('#reserveForm,.reserve-full,.reserve-done')) return;
+  if(!box&&lastReservation()){
+    const r=lastReservation();
+    body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">You're on the list.</p><p>${escHtml(r.summary)}</p><p>We'll send your payment link by email and WhatsApp before then. To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
+    foot.hidden=true; return;
+  }
   if(!box){
     body.innerHTML=`<div class="cart-empty"><p>Your box is empty.</p><a class="site-btn site-btn--line" href="${HOME_URL}#build" id="goBuild">Build a box</a></div>`;
     foot.hidden=true; body.querySelector('#goBuild').onclick=closeDrawer; return;

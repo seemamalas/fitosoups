@@ -104,6 +104,7 @@ function showReserveForm(skipCheck){
     <label class="reserve-form__field">Area<select id="rArea" required><option value="" disabled selected>Choose your area in Dubai</option>${DUBAI_AREAS.map(a=>`<option>${a}</option>`).join('')}<option value="other">Another area in Dubai</option><option value="outside">Outside Dubai</option></select></label>
     <label class="reserve-form__field">Address<input id="rAddress" autocomplete="street-address" placeholder="Building or villa, flat number, street" value="${v('address')}" required></label>
     <button class="site-btn reserve-form__submit" type="submit">Reserve, pay later</button>
+    <p class="reserve-form__wait" id="rWait" role="status" hidden>This takes a few seconds. Please keep this page open.</p>
     <p class="site-smallprint">No payment today. We'll email and WhatsApp you a payment link${pre?` for all ${pp.boxes} deliveries`:''} before your ${sub?'first box':'delivery'}, and hold your date until then.${sub?' Minimum 2 deliveries.':''}</p>
     <button class="site-btn site-btn--line reserve-form__back" type="button" id="rBack">Back to my box</button>
   </form>`;
@@ -125,12 +126,17 @@ function showReserveForm(skipCheck){
     e.preventDefault();
     const btn=form.querySelector('.reserve-form__submit');
     const name=form.rName.value.trim(), area=form.rArea.value, inDubai=area!=='outside';
-    btn.disabled=true; btn.textContent='Reserving…';
+    btn.disabled=true; btn.textContent='Reserving…'; btn.classList.add('is-busy');
+    // The sheet can take a while (it checks the slot is still free), so after 3 seconds say so.
+    const wait=form.querySelector('#rWait');
+    const slow=setTimeout(()=>{btn.textContent='Saving your place…'; if(wait) wait.hidden=false;},3000);
+    const stop=()=>{clearTimeout(slow); btn.classList.remove('is-busy'); if(wait) wait.hidden=true;};
     sendReservation({source:'Box builder',name,phone:form.rPhone.value.trim(),email:form.rEmail.value.trim(),
       lives_in:inDubai?'Dubai':'Outside Dubai',area:area==='other'?'Other Dubai area':area==='outside'?'':area,address:form.rAddress.value.trim(),...boxFields(box)})
       .then(res=>{
+        stop();
         if(res.status==='full'||res.status==='unavailable'){ showSlotFull(res.status,true); return; }
-        box.reserved=true; saveBox(); typed={};
+        typed={};
         const first=name.split(' ')[0];
         const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
         body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">You're on the list${first?', '+escHtml(first):''}.</p><p>${!inDubai
@@ -138,8 +144,14 @@ function showReserveForm(skipCheck){
           : res.status==='unknown'
           ? `Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp and email you a payment link before then. Nothing is charged until you pay it.`
           : `We've saved your ${sub?'soupscription':'box'} for ${when}. Before then we'll email you a payment link and send it on WhatsApp. Nothing is charged until you pay it.`}</p></div>`;
+        // Reserved, so the box is no longer "in the basket": remember what they booked, then empty it.
+        const pp=planOf(box), pre=sub&&pp.boxes>0;
+        const summary=sub?`Soupscription, ${box.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${box.packs} packs, ${when}.`;
+        try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:box.first,at:Date.now()}));}catch(_){}
+        box=null; saveBox(); document.getElementById('cartN').textContent=0;
+        document.dispatchEvent(new CustomEvent('fito:box-emptied'));
       })
-      .catch(()=>{btn.disabled=false;btn.textContent='Reserve, pay later';toast("That didn't go through. Please try again.");});
+      .catch(()=>{stop();btn.disabled=false;btn.textContent='Reserve, pay later';toast("That didn't go through. Please try again.");});
   };
   form.rName.focus();
 }
