@@ -1,5 +1,12 @@
 /* Products, prices and delivery rules. Shared by the box builder and the cart. */
 const PRICE=45, MIN=4, CUBES=4, SERV=2, DELIVERY=15;
+// How a soupscription is paid. 'go': box by box, at least SUB_MIN_BOXES boxes.
+// 'p6': six boxes paid up front, with an extra saving on top of the subscriber saving.
+// legal.js has the same rules in the terms.
+const SUB_MIN_BOXES=2, PREPAY_PAUSES=2;
+const PLANS={go:{boxes:0,extra:0},p6:{boxes:6,extra:.05}};
+const planOf=b=>PLANS[(b&&b.plan)||'go']||PLANS.go;
+const round2=x=>Math.round(x*100)/100;
 // Deliveries per time slot. The sheet sends the live number back, so it can change there too.
 const SLOT_LIMIT=4;
 // Delivery days and their time slots (0 = Sunday ... 6 = Saturday). Saturdays and Sundays have all three;

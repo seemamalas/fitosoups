@@ -152,6 +152,20 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   font-size:.93rem;font-weight:500;transition:background .16s,color .16s}
 .box-builder__toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .box-builder__toggle-note{font-size:.88rem;color:var(--soft);margin-bottom:24px}
+/* How a soupscription is paid: as you go, or 6 or 12 boxes up front. */
+.box-builder__plan{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+.box-builder__plan[hidden]{display:none}
+.box-builder__plan button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;
+  border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:14px;padding:10px 16px;font-family:inherit;min-width:170px}
+.box-builder__plan button b{font-weight:600;font-size:.95rem}
+.box-builder__plan button span{font-size:.78rem;color:var(--soft)}
+.box-builder__plan button[aria-pressed="true"]{border-color:#DB7814;box-shadow:inset 0 0 0 1px #DB7814;background:#FFF6EC}
+.box-builder__plan button[aria-pressed="true"] span{color:#B35E0E}
+@media (hover:hover) and (pointer:fine){.box-builder__plan button:hover{border-color:var(--ink)}}
+.box-builder__plan button{flex:1 1 0;min-width:0}
+.box-summary__prepay{border-top:1px dashed var(--rule);margin-top:6px}
+.box-summary__prepay[hidden]{display:none}
+#sTotRow.is-each{border-top:none;margin-top:0;padding-top:8px;font-family:var(--ui);font-weight:400;font-size:.95rem;color:var(--ink2)}
 .box-picker__head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
 .box-picker__head h3{font-size:1.25rem;margin-bottom:2px}
 .box-picker__head p{margin:0;font-size:.88rem;color:var(--soft)}

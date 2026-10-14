@@ -2,7 +2,9 @@
    the mobile box dock, customer messages and the early-subscriber waitlist.
    Uses the shared helpers from js/common/ (catalog, art, cart, drawers, toast). */
 
-let mode='sub',freq=4,firstIdx=0,
+// The nudge line repeated what the box art already says, so it is off.
+const SHOW_NUDGE=false;
+let mode='sub',plan='go',freq=4,firstIdx=0,
     qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0])),
     tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
 
@@ -173,7 +175,7 @@ function renderBox(){
   const ghosts=need?`<div class="box-art__row box-art__row--ghost"><div class="box-art__main"><div class="box-art__packs">${Array.from({length:Math.min(need,8)},()=>'<span class="box-art__pack box-art__pack--ghost"></span>').join('')}</div></div>
       <div class="box-art__count box-art__count--ghost">${label}</div></div>`:'';
   host.innerHTML = `<div class="box-art__box"><div class="box-art__lineup">${rows}${topRow}${ghosts}</div></div>`+
-    (total||tcount?`<div class="box-art__total"><span>Your box</span><span><b>${total}</b> pack${total===1?'':'s'}${tcount?` · ${tcount} bag${tcount>1?'s':''} of croutons`:''}</span></div>`:'');
+    '';
   const da=document.getElementById('dockArt');
   if(da) da.innerHTML = avail.filter(f=>qty[f.id]>0).map(f=>`<span class="box-dock__chip${(qty[f.id]>(prevQty[f.id]||0))?' is-hopping':''}"><img src="${CUBEIMG[f.c]||''}" alt=""><i>${qty[f.id]}</i></span>`).join('') || '<span class="box-dock__empty">Empty</span>';
   prevQty=Object.fromEntries(avail.map(f=>[f.id,qty[f.id]])); prevTops=tcount;
@@ -250,13 +252,24 @@ document.getElementById('toppings').addEventListener('click',e=>{
   if(p||m) render();
 });
 document.getElementById('tSub').onclick=()=>{mode='sub';setSeg();applySlots();};
+document.getElementById('planRow').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-plan]'); if(!b) return;
+  plan=b.dataset.plan; setSeg(); render();
+});
+// The line under the toggles: what this way of paying means, in one sentence.
+function planNote(){
+  if(mode!=='sub') return 'A single delivery. No commitment, no discount.';
+  if(plan==='go') return 'A box every 4 weeks, paid box by box. Minimum 2 boxes, then skip, pause or cancel up to 3 days before a box.';
+  const p=PLANS[plan];
+  return `${p.boxes} boxes, one every 4 weeks, paid up front with an extra ${Math.round(p.extra*100)}% off. Minimum 2 boxes; stop after that and we refund the rest.`;
+}
 document.getElementById('tOne').onclick=()=>{mode='one';setSeg();applySlots();};
 function setSeg(){
   document.getElementById('tSub').setAttribute('aria-pressed',mode==='sub');
   document.getElementById('tOne').setAttribute('aria-pressed',mode==='one');
-  document.getElementById('segNote').textContent = mode==='sub'
-    ? 'Your soupscription: a box every 4 weeks. Skip, pause or cancel up to 3 days before a delivery.'
-    : 'A single delivery. No commitment, no discount.';
+  document.getElementById('segNote').textContent = planNote();
+  const pr=document.getElementById('planRow'); pr.hidden = mode!=='sub';
+  pr.querySelectorAll('button[data-plan]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.plan===plan));
   document.getElementById('dayLabel').textContent = mode==='sub' ? 'First delivery' : 'Delivery day';
 }
 function render(){
@@ -272,6 +285,9 @@ function render(){
     topTotal+=tops[t.id]*t.price; topCount+=tops[t.id];
   });
   const sub=n*PRICE,pct=mode==='sub'?discountFor(n):0,save=sub*pct,del=n?delFor(mode):0,total=sub-save+topTotal+del;
+  // Prepaid plans: the box price above, times the number of boxes, less the extra prepay saving.
+  const pp=mode==='sub'?PLANS[plan]:PLANS.go, pre=pp.boxes>0;
+  const preFull=round2(total*pp.boxes), preSave=round2(preFull*pp.extra), prePay=round2(preFull-preSave);
   document.getElementById('capLine').textContent=n
     ?`${n} pack${n>1?'s':''} · ${n*CUBES} cubes · about ${n*SERV} bowls`+(topCount?` · ${topCount} add-on${topCount>1?'s':''}`:'')
     :'Nothing in it yet';
@@ -291,20 +307,22 @@ function render(){
   document.getElementById('sSave').textContent='−'+money(save);
   document.getElementById('sTopRow').hidden=topCount===0;
   document.getElementById('sTop').textContent=money(topTotal);
-  document.getElementById('sDel').textContent=mode==='sub'?'Free for early subscribers':money(DELIVERY);
-  document.getElementById('sTotal').textContent=money(total);
-  document.getElementById('sPer').textContent=n?money((sub-save)/(n*SERV))+' a bowl':'';
+  document.getElementById('sDel').textContent=mode==='sub'?'Free':money(DELIVERY);
+  // One big line: the 4-weekly price, or for a prepaid plan the one payment, with the price a box underneath.
+  document.getElementById('sTotal').textContent=money(pre?prePay:total);
+  document.getElementById('sTotLbl').textContent=pre?`${pp.boxes} boxes`:mode==='sub'?'Every 4 weeks':'Total';
+  document.getElementById('sPer').textContent=!n?'':pre?`${money(prePay/pp.boxes)} a box instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=mode==='sub'?'Reserve my soupscription':'Reserve this box';}
+  else{btn.disabled=false;btn.textContent=mode!=='sub'?'Reserve this box':pre?`Reserve my ${pp.boxes} boxes`:'Reserve my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
   const dc=document.getElementById('dockCount'), ds2=document.getElementById('dockSub'), db=document.getElementById('dockBtn');
   if(dc){
     dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
-    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : `${money(total)} · about ${n*SERV} bowls`;
+    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} boxes` : `${money(total)} · about ${n*SERV} bowls`;
     db.textContent = n>=MIN ? 'Reserve' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
@@ -312,18 +330,20 @@ function render(){
   if(mode==='sub'){
     const ds=scheduleDates();
     sl.hidden=false;
-    sl.innerHTML=`First box <b>${fmt(ds[0])}</b>, ${slot}. Then <b>${fmt(ds[1])}</b> and <b>${fmt(ds[2])}</b>. A reminder goes out three days before each delivery, and you can skip it or change the flavours.`;
+    sl.innerHTML=`First box <b>${fmt(ds[0])}</b>, ${slot}, then every 4 weeks${pre?`, ${pp.boxes} boxes in all`:''}.`;
   } else { sl.hidden=false; sl.innerHTML=`Delivered <b>${fmt(DAYS[firstIdx])}</b>, ${slot}.`; }
   const nudge=document.getElementById('nudge');
   const next=TIERS.filter(t=>t.min>n).sort((a,b)=>a.min-b.min)[0];
-  if(mode==='sub'&&n>=MIN&&n<6){
+  if(SHOW_NUDGE&&mode==='sub'&&n>=MIN&&n<6){
     nudge.hidden=false;
     nudge.textContent=`Add ${6-n} more pack${6-n>1?'s':''} and your saving rises to 12%.`;
-  }else if(mode==='sub'&&next&&n>=MIN){
+  }else if(SHOW_NUDGE&&mode==='sub'&&next&&n>=MIN){
     nudge.hidden=false;
     nudge.textContent=`Add ${next.min-n} more pack${next.min-n>1?'s':''} and your saving goes from ${Math.round(pct*100)}% to ${Math.round(next.pct*100)}%.`;
   }else nudge.hidden=true;
-  document.getElementById('terms').textContent=mode==='sub'?'No payment today. Then a box every 4 weeks: skip, pause or cancel up to 3 days before a delivery.':'No payment today. One box, delivered once.';
+  document.getElementById('terms').textContent=mode!=='sub'?'No payment today. We send your payment link before delivery.'
+    :pre?`No payment today. One payment link for all ${pp.boxes} boxes, before your first box.`
+    :'No payment today. We send your payment link before your first box.';
 }
 (function(){
   const dock=document.getElementById('dock'), sec=document.getElementById('build'), sum=document.getElementById('summary');
@@ -340,8 +360,10 @@ function syncBox(){
   const n=Object.values(qty).reduce((a,b)=>a+b,0);
   const tt=TOPPINGS.reduce((a,t)=>a+tops[t.id]*t.price,0);
   if(!n&&!tt){ if(box){box=null;saveBox();} updateCart(); return; }
-  const pct=mode==='sub'?discountFor(n):0, del=delFor(mode);
-  const next={mode,items:{...qty},tops:{...tops},packs:n,del,total:n*PRICE*(1-pct)+tt+del,pct,freq,slot,first:DAYS[firstIdx].toISOString()};
+  const pct=mode==='sub'?discountFor(n):0, del=delFor(mode), total=n*PRICE*(1-pct)+tt+del;
+  const pl=mode==='sub'?plan:'go', pp=PLANS[pl];
+  const full=round2(total*pp.boxes), prepaid=pp.boxes?round2(full-round2(full*pp.extra)):0;
+  const next={mode,plan:pl,items:{...qty},tops:{...tops},packs:n,del,total,pct,freq,slot,first:DAYS[firstIdx].toISOString(),prepaid};
   if(box&&box.reserved&&JSON.stringify({...box,reserved:undefined})===JSON.stringify(next)) next.reserved=true;
   box=next; saveBox(); updateCart();
 }
@@ -382,7 +404,7 @@ document.addEventListener('fito:box-emptied',()=>{
 
 // Restore a box saved earlier in this browser (cart.js has already loaded it).
 if(box&&box.items){
-  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';
+  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';plan=PLANS[box.plan]?box.plan:'go';
   const fi=DAYS.findIndex(d=>isoDay(d)===isoDay(new Date(box.first)));
   if(fi>=0){ firstIdx=fi; calMonth=monthOf(DAYS[fi]); if(box.slot) slot=box.slot; }
 }

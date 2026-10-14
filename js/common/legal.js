@@ -4,11 +4,16 @@ const LEGAL={
 <h4>Who we are</h4>
 <p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups.</p>
 <h4>Reservations</h4>
-<p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us.</p>
+<p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us. The terms on this page when you pay are the ones that apply to your order.</p>
 <h4>Ordering</h4>
 <p>A pack contains four frozen soup cubes, about two bowls. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
 <h4>Subscriptions</h4>
-<p>Subscription boxes are delivered every four weeks on the slot you choose. You can skip a delivery, change flavours or cancel at any time before your box is cooked, which is three days before the delivery date. Early subscriber pricing holds for as long as the subscription stays active.</p>
+<p>A soupscription is a box every four weeks, on the day and time slot you choose, with four or more packs in the flavours you choose. You can pay box by box, or pay for six boxes up front.</p>
+<p><b>Minimum two boxes.</b> Whichever way you pay, the minimum is two boxes.</p>
+<p><b>Paying box by box.</b> After your second box you can skip a delivery, pause or cancel at any time up to three days before a delivery, which is when your box is packed. Each box is charged at the price of that box.</p>
+<p><b>Prepaying six boxes.</b> You pay once, up front, and get an extra 5% off on top of your subscriber saving. Your box size stays the same for those six boxes. You can pause up to two of them; paused boxes are delivered later, at the end of your plan. After your second box you can stop: we charge each box you have received at the box-by-box price and refund the rest of what you paid. If we ever stop delivering, we refund every box you have not received in full.</p>
+<p><b>Changing your box.</b> You can change flavours for any box up to three days before it is delivered. If we don't hear from you, you get the same flavours as last time. Paying box by box, you can also change the number of packs for any box. On a prepaid plan you can add packs to a box and pay only for those, at your subscriber price; to change your box size for good, we move the value of your remaining boxes onto the new size.</p>
+<p>Early subscriber pricing holds for as long as the subscription stays active.</p>
 <h4>Delivery</h4>
 <p>Delivery costs AED 15 a box. For our first fifty subscribers it is free on every box, for as long as they stay subscribed. For now we deliver only within Dubai. Orders with a delivery address outside Dubai will be cancelled and refunded in full. Deliveries run on Saturdays and Sundays (8:00 to 10:00, 13:00 to 15:00 or 19:00 to 21:00) and on Monday, Wednesday and Thursday evenings (19:00 to 21:00), and are booked at least a week ahead. We deliver in a freezer vehicle, inside the two hour slot you select. Someone must be there to receive the box and put it straight into a freezer. If nobody is available and the soup cannot be handed over, we cannot replace it free of charge.</p>
 <h4>Refunds</h4>

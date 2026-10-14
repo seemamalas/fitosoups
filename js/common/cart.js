@@ -34,12 +34,14 @@ function updateCart(force){
       <div class="cart-item__price">${money(box.tops[t.id]*t.price)}</div>
     </div>`).join('')
     +(box.pct?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Subscriber saving</div><div class="cart-item__meta">${Math.round(box.pct*100)}% off ${box.packs} packs</div></div><div class="cart-item__price cart-item__price--saving">−${money(box.packs*PRICE*box.pct)}</div></div>`:'')
+    +(box.mode==='sub'&&planOf(box).boxes?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Prepay ${planOf(box).boxes} boxes</div><div class="cart-item__meta">${money(box.total)} a box, extra ${Math.round(planOf(box).extra*100)}% off</div></div><div class="cart-item__price">${money(box.prepaid)}</div></div>`:'')
     +`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title">Delivery</div><div class="cart-item__meta">${box.mode==='sub'?'Free for early subscribers':'Anywhere in Dubai'}</div></div><div class="cart-item__price">${box.del?money(box.del):'Free'}</div></div>`
     +`<button class="site-btn site-btn--line cart-clear" id="clearBox">Empty the box</button>`;
-  document.getElementById('dTotal').textContent=money(box.total);
-  document.getElementById('dTerms').textContent=box.mode==='sub'
-    ? `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · skip or cancel up to 3 days before`
-    : 'One-time box · no commitment';
+  const pp=planOf(box), pre=box.mode==='sub'&&pp.boxes>0;
+  document.getElementById('dTotal').textContent=money(pre?box.prepaid:box.total);
+  document.getElementById('dTerms').textContent=box.mode!=='sub' ? 'One-time box · no commitment'
+    : pre ? `${pp.boxes} boxes, paid up front · first box ${fmt(new Date(box.first))}, ${box.slot||''} · pause up to ${PREPAY_PAUSES}`
+    : `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · minimum 2 boxes, then skip or cancel up to 3 days before`;
   if(box.reserved) document.getElementById('dTerms').textContent='Reserved. Your payment link comes by email and WhatsApp before delivery.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
   co.disabled=short;

@@ -139,7 +139,7 @@
  ]
 }
 </script>
-<link rel="stylesheet" href="css/pages/home.css?v=21">
+<link rel="stylesheet" href="css/pages/home.css?v=23">
 </head>
 <body>
 
@@ -213,7 +213,11 @@
       <button id="tSub" aria-pressed="true">Soupscription</button>
       <button id="tOne" aria-pressed="false">One-time box</button>
     </div>
-    <p class="box-builder__toggle-note" id="segNote">Your soupscription: a box every 4 weeks. Skip, pause or cancel up to 3 days before a delivery.</p>
+    <div class="box-builder__plan" id="planRow" role="group" aria-label="How to pay">
+      <button type="button" data-plan="go" aria-pressed="true"><b>Pay as you go</b><span>Box by box</span></button>
+      <button type="button" data-plan="p6" aria-pressed="false"><b>Prepay 6 boxes</b><span>Extra 5% off</span></button>
+    </div>
+    <p class="box-builder__toggle-note" id="segNote">A box every 4 weeks, paid box by box. Minimum 2 boxes, then skip, pause or cancel up to 3 days before a box.</p>
     <div id="schedule" class="box-schedule">
       <div class="box-schedule__cal">
         <p class="box-schedule__label" id="dayLabel">First delivery</p>
@@ -242,8 +246,7 @@
       <aside class="box-summary" id="summary">
         <div class="early-sub-flag" id="founderFlag">
           <strong>Early subscriber</strong>
-          <span>Free delivery on every box, an extra pack on us in your first, and your subscriber pricing held for as long as you stay subscribed.</span>
-          <a href="#founding">What else early subscribers get</a>
+          <span>Free delivery, an extra pack in your first box, and this price for as long as you stay.</span>
         </div>
         <h3>Your box</h3>
         <p class="box-summary__caption" id="capLine">Nothing in it yet</p>
@@ -253,12 +256,12 @@
         <div class="box-summary__row" id="sSaveRow" hidden><span>Subscriber saving <span id="sPct"></span></span><span class="box-summary__saving" id="sSave">−AED 0</span></div>
         <div class="box-summary__row" id="sTopRow" hidden><span>Add-ons</span><span id="sTop">AED 0</span></div>
         <div class="box-summary__row"><span>Delivery</span><span id="sDel">AED 15</span></div>
-        <div class="box-summary__row box-summary__row--total"><span>Total</span><span id="sTotal">AED 0</span></div>
+        <div class="box-summary__row box-summary__row--total" id="sTotRow"><span id="sTotLbl">Total</span><span id="sTotal">AED 0</span></div>
         <div class="box-summary__per-serving" id="sPer"></div>
         <p class="box-summary__schedule" id="schedLine" hidden></p>
         <p class="box-summary__nudge" id="nudge" hidden></p>
         <button class="site-btn box-summary__cta" id="addBtn" disabled>Add four packs to start</button>
-        <p class="site-smallprint" id="terms">Skip, pause or cancel up to 3 days before a delivery.</p>
+        <p class="site-smallprint" id="terms">No payment today. We send your payment link before your first box.</p>
       </aside>
     </div>
   </div>
@@ -367,13 +370,13 @@
 
 <script src="js/common/config.js"></script>
 <script src="js/common/utils.js"></script>
-<script src="js/common/catalog.js"></script>
+<script src="js/common/catalog.js?v=23"></script>
 <script src="js/common/art.js"></script>
 <script src="js/common/toast.js"></script>
 <script src="js/common/drawers.js"></script>
-<script src="js/common/legal.js"></script>
-<script src="js/common/reserve.js"></script>
-<script src="js/common/cart.js"></script>
-<script src="js/pages/home.js?v=21"></script>
+<script src="js/common/legal.js?v=23"></script>
+<script src="js/common/reserve.js?v=23"></script>
+<script src="js/common/cart.js?v=23"></script>
+<script src="js/pages/home.js?v=23"></script>
 </body>
 </html>

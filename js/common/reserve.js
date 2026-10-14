@@ -71,10 +71,14 @@ function sendReservation(fields){
 
 /* The box as flat fields: one column per flavour, easy to count up for the kitchen or investors. */
 function boxFields(b){
-  const f={reservation:b.mode==='sub'?'Soupscription, every 4 weeks':'One-time box',packs:b.packs};
+  // The sheet counts anything starting "Soupscription" as a subscriber (slots, First 50), so keep that word first.
+  const pp=planOf(b), pre=b.mode==='sub'&&pp.boxes>0;
+  const f={reservation:b.mode!=='sub'?'One-time box':pre?`Soupscription, ${pp.boxes} boxes prepaid`:'Soupscription, every 4 weeks',packs:b.packs};
   FLAVOURS.forEach(x=>{f[x.name]=b.items[x.id]||0;});
   TOPPINGS.forEach(t=>{f[t.name]=(b.tops||{})[t.id]||0;});
   f.price_per_box_aed=Math.round(b.total*100)/100;
+  if(b.mode==='sub'){ f.plan=pre?`Prepay ${pp.boxes} boxes (extra ${Math.round(pp.extra*100)}% off)`:'Pay as you go (minimum 2 boxes)';
+    f.prepaid_boxes=pre?pp.boxes:0; f.prepaid_total_aed=pre?b.prepaid:0; }
   f.first_delivery=fmtLong(new Date(b.first)); f.first_delivery_iso=isoDay(new Date(b.first)); f.time_slot=b.slot||'';
   return f;
 }
@@ -87,12 +91,12 @@ let typed={};
 function showReserveForm(skipCheck){
   if(!box||box.packs<MIN) return;
   const body=document.getElementById('dbody'), foot=document.getElementById('dfoot');
-  const sub=box.mode==='sub', v=k=>escHtml(typed[k]||'');
+  const sub=box.mode==='sub', v=k=>escHtml(typed[k]||''), pp=planOf(box), pre=sub&&pp.boxes>0;
   foot.hidden=true;
   body.innerHTML=`<form class="reserve-form" id="reserveForm">
     <div>
       <p class="reserve-form__title">Reserve your ${sub?'soupscription':'box'}</p>
-      <p class="reserve-form__box">${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
+      <p class="reserve-form__box">${pre?`${box.packs} packs a box · ${pp.boxes} boxes, ${money(box.prepaid)} up front`:`${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''}`} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
     </div>
     <label class="reserve-form__field">Full name<input id="rName" autocomplete="name" value="${v('name')}" required></label>
     <label class="reserve-form__field">Phone (WhatsApp)<input id="rPhone" type="tel" autocomplete="tel" placeholder="+971 5X XXX XXXX" value="${v('phone')}" required></label>
@@ -100,7 +104,7 @@ function showReserveForm(skipCheck){
     <label class="reserve-form__field">Area<select id="rArea" required><option value="" disabled selected>Choose your area in Dubai</option>${DUBAI_AREAS.map(a=>`<option>${a}</option>`).join('')}<option value="other">Another area in Dubai</option><option value="outside">Outside Dubai</option></select></label>
     <label class="reserve-form__field">Address<input id="rAddress" autocomplete="street-address" placeholder="Building or villa, flat number, street" value="${v('address')}" required></label>
     <button class="site-btn reserve-form__submit" type="submit">Reserve, pay later</button>
-    <p class="site-smallprint">No payment today. When we are ready to deliver, we'll email you a secure payment link and send it on WhatsApp too. Your ${sub?'first ':''}delivery date is held until then.</p>
+    <p class="site-smallprint">No payment today. We'll email and WhatsApp you a payment link${pre?` for all ${pp.boxes} boxes`:''} before your ${sub?'first box':'delivery'}, and hold your date until then.${sub?' Minimum 2 boxes.':''}</p>
     <button class="site-btn site-btn--line reserve-form__back" type="button" id="rBack">Back to my box</button>
   </form>`;
   body.querySelector('#rBack').onclick=()=>updateCart(true);
