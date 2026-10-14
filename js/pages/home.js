@@ -267,7 +267,7 @@ document.getElementById('tOne').onclick=()=>{mode='one';setSeg();applySlots();};
 function setSeg(){
   document.getElementById('tSub').setAttribute('aria-pressed',mode==='sub');
   document.getElementById('tOne').setAttribute('aria-pressed',mode==='one');
-  document.getElementById('segNote').textContent = planNote();
+  const sn=document.getElementById('segNote'); if(sn) sn.textContent = planNote();
   const pr=document.getElementById('planRow'); pr.hidden = mode!=='sub';
   pr.querySelectorAll('button[data-plan]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.plan===plan));
   document.getElementById('dayLabel').textContent = mode==='sub' ? 'First delivery' : 'Delivery day';
@@ -310,19 +310,19 @@ function render(){
   document.getElementById('sDel').textContent=mode==='sub'?'Free':money(DELIVERY);
   // One big line: the 4-weekly price, or for a prepaid plan the one payment, with the price a box underneath.
   document.getElementById('sTotal').textContent=money(pre?prePay:total);
-  document.getElementById('sTotLbl').textContent=pre?`${pp.boxes} boxes`:mode==='sub'?'Every 4 weeks':'Total';
-  document.getElementById('sPer').textContent=!n?'':pre?`${money(prePay/pp.boxes)} a box instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
+  document.getElementById('sTotLbl').textContent=pre?'Up front':mode==='sub'?'Every 4 weeks':'Total';
+  document.getElementById('sPer').innerHTML=!n?'':pre?`For ${pp.boxes} deliveries, one every 4 weeks<br>${money(prePay/pp.boxes)} each instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=mode!=='sub'?'Reserve this box':pre?`Reserve my ${pp.boxes} boxes`:'Reserve my soupscription';}
+  else{btn.disabled=false;btn.textContent=mode!=='sub'?'Reserve this box':'Reserve my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
   const dc=document.getElementById('dockCount'), ds2=document.getElementById('dockSub'), db=document.getElementById('dockBtn');
   if(dc){
     dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
-    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} boxes` : `${money(total)} · about ${n*SERV} bowls`;
+    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} deliveries` : `${money(total)} · about ${n*SERV} bowls`;
     db.textContent = n>=MIN ? 'Reserve' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
@@ -330,7 +330,8 @@ function render(){
   if(mode==='sub'){
     const ds=scheduleDates();
     sl.hidden=false;
-    sl.innerHTML=`First box <b>${fmt(ds[0])}</b>, ${slot}, then every 4 weeks${pre?`, ${pp.boxes} boxes in all`:''}.`;
+    const last=new Date(ds[0]); last.setDate(last.getDate()+freq*7*(pp.boxes-1));
+    sl.innerHTML=`First box <b>${fmt(ds[0])}</b>, ${slot}, then every 4 weeks.`+(pre?` Your ${pp.boxes}th is <b>${fmt(last)}</b>.`:'');
   } else { sl.hidden=false; sl.innerHTML=`Delivered <b>${fmt(DAYS[firstIdx])}</b>, ${slot}.`; }
   const nudge=document.getElementById('nudge');
   const next=TIERS.filter(t=>t.min>n).sort((a,b)=>a.min-b.min)[0];
@@ -341,9 +342,10 @@ function render(){
     nudge.hidden=false;
     nudge.textContent=`Add ${next.min-n} more pack${next.min-n>1?'s':''} and your saving goes from ${Math.round(pct*100)}% to ${Math.round(next.pct*100)}%.`;
   }else nudge.hidden=true;
-  document.getElementById('terms').textContent=mode!=='sub'?'No payment today. We send your payment link before delivery.'
-    :pre?`No payment today. One payment link for all ${pp.boxes} boxes, before your first box.`
-    :'No payment today. We send your payment link before your first box.';
+  // Short on purpose: the full rules live in the Terms, linked right after this line.
+  document.getElementById('terms').textContent=mode!=='sub'?'No payment today.'
+    :pre?`No payment today. One payment for all ${pp.boxes} deliveries.`
+    :'No payment today.';
 }
 (function(){
   const dock=document.getElementById('dock'), sec=document.getElementById('build'), sum=document.getElementById('summary');

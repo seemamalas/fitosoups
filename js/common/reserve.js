@@ -96,7 +96,7 @@ function showReserveForm(skipCheck){
   body.innerHTML=`<form class="reserve-form" id="reserveForm">
     <div>
       <p class="reserve-form__title">Reserve your ${sub?'soupscription':'box'}</p>
-      <p class="reserve-form__box">${pre?`${box.packs} packs a box · ${pp.boxes} boxes, ${money(box.prepaid)} up front`:`${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''}`} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
+      <p class="reserve-form__box">${pre?`${box.packs} packs a box · ${pp.boxes} deliveries, ${money(box.prepaid)} up front`:`${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''}`} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
     </div>
     <label class="reserve-form__field">Full name<input id="rName" autocomplete="name" value="${v('name')}" required></label>
     <label class="reserve-form__field">Phone (WhatsApp)<input id="rPhone" type="tel" autocomplete="tel" placeholder="+971 5X XXX XXXX" value="${v('phone')}" required></label>
@@ -104,7 +104,7 @@ function showReserveForm(skipCheck){
     <label class="reserve-form__field">Area<select id="rArea" required><option value="" disabled selected>Choose your area in Dubai</option>${DUBAI_AREAS.map(a=>`<option>${a}</option>`).join('')}<option value="other">Another area in Dubai</option><option value="outside">Outside Dubai</option></select></label>
     <label class="reserve-form__field">Address<input id="rAddress" autocomplete="street-address" placeholder="Building or villa, flat number, street" value="${v('address')}" required></label>
     <button class="site-btn reserve-form__submit" type="submit">Reserve, pay later</button>
-    <p class="site-smallprint">No payment today. We'll email and WhatsApp you a payment link${pre?` for all ${pp.boxes} boxes`:''} before your ${sub?'first box':'delivery'}, and hold your date until then.${sub?' Minimum 2 boxes.':''}</p>
+    <p class="site-smallprint">No payment today. We'll email and WhatsApp you a payment link${pre?` for all ${pp.boxes} deliveries`:''} before your ${sub?'first box':'delivery'}, and hold your date until then.${sub?' Minimum 2 deliveries.':''}</p>
     <button class="site-btn site-btn--line reserve-form__back" type="button" id="rBack">Back to my box</button>
   </form>`;
   body.querySelector('#rBack').onclick=()=>updateCart(true);

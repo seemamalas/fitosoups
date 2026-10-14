@@ -147,13 +147,23 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 /* ---------- Box builder: layout and soupscription toggle ---------- */
 .box-builder__layout{display:grid;grid-template-columns:1fr 360px;gap:44px;align-items:start}
 @media(max-width:960px){.box-builder__layout{grid-template-columns:1fr;gap:32px}}
-.box-builder__toggle{display:inline-flex;background:var(--tint);border-radius:999px;padding:5px;margin-bottom:12px;gap:4px}
-.box-builder__toggle button{border:none;background:none;color:var(--ink2);padding:11px 22px;border-radius:999px;
-  font-size:.93rem;font-weight:500;transition:background .16s,color .16s}
-.box-builder__toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+/* Soupscription or one-time: the first choice, so it gets the biggest buttons. */
+.box-builder__toggle{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;max-width:640px}
+.box-builder__toggle button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;cursor:pointer;
+  border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:18px;padding:16px 18px;font-family:inherit;
+  transition:background .16s,color .16s,border-color .16s}
+.box-builder__toggle button b{font-family:var(--disp);font-weight:600;font-size:1.22rem;line-height:1.15}
+.box-builder__toggle button span{font-size:.84rem;color:var(--soft);line-height:1.35;padding-right:26px}
+.box-builder__toggle button::after{content:"";position:absolute;bottom:16px;right:14px;width:18px;height:18px;border-radius:50%;
+  border:1.5px solid var(--tint2);background:#fff;box-sizing:border-box}
+.box-builder__toggle button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.box-builder__toggle button[aria-pressed="true"] span{color:rgba(255,251,247,.72)}
+.box-builder__toggle button[aria-pressed="true"]::after{border:5px solid #DB7814;background:var(--paper)}
+@media (hover:hover) and (pointer:fine){.box-builder__toggle button[aria-pressed="false"]:hover{border-color:var(--ink)}}
+@media(max-width:420px){.box-builder__toggle button{padding:14px 14px}.box-builder__toggle button b{font-size:1.1rem}}
 .box-builder__toggle-note{font-size:.88rem;color:var(--soft);margin-bottom:24px}
-/* How a soupscription is paid: as you go, or 6 or 12 boxes up front. */
-.box-builder__plan{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+/* How a soupscription is paid: as you go, or 6 boxes up front. Smaller, because it is the second choice. */
+.box-builder__plan{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px;max-width:640px}
 .box-builder__plan[hidden]{display:none}
 .box-builder__plan button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;
   border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:14px;padding:10px 16px;font-family:inherit;min-width:170px}
