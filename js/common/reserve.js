@@ -73,17 +73,20 @@ function sendReservation(fields){
 const payMoney=n=>{const r=Math.round(n*100)/100;return r%1?'AED '+r.toFixed(2):money(r);};
 /* A short booking reference, e.g. FITO-K3X9Q2, sent to the sheet and to Stripe so each payment matches its booking. */
 const newBookingRef=()=>'FITO-'+(Date.now().toString(36).slice(-5)+Math.random().toString(36).slice(2,4)).toUpperCase();
-/* This customer's own copy of the payment link: their email filled in, and the booking reference attached. */
-function payLinkFor(email,ref){
+/* This customer's own copy of the payment link: their email and exact amount filled in, and the booking reference attached.
+   Stripe takes the amount in fils (AED x 100) through prefilled_amount. */
+function payLinkFor(email,ref,amount){
   if(!PAY_URL) return '';
-  try{const u=new URL(PAY_URL); if(email) u.searchParams.set('prefilled_email',email); if(ref) u.searchParams.set('client_reference_id',ref); return u.toString();}catch(_){return PAY_URL;}
+  try{const u=new URL(PAY_URL); if(email) u.searchParams.set('prefilled_email',email); if(ref) u.searchParams.set('client_reference_id',ref);
+    const fils=Math.round((Number(amount)||0)*100); if(fils>0) u.searchParams.set('prefilled_amount',String(fils));
+    return u.toString();}catch(_){return PAY_URL;}
 }
 /* The panel with the amount and the Pay button, shown after booking and again in the Box drawer. */
 function payPanel(p){
   if(!p||!p.link) return '';
   return `<div class="reserve-pay"><p class="reserve-pay__amount">${escHtml(p.amount)}</p><p class="reserve-pay__what">${escHtml(p.what)}</p>
     <a class="site-btn reserve-pay__btn" href="${escHtml(p.link)}" target="_blank" rel="noopener">Pay ${escHtml(p.amount)} now</a>
-    <p class="site-smallprint">On the secure payment page, enter <b>${escHtml(p.amount)}</b>. It is run by The CO Kitchens, the kitchen where FITO is made, so you'll see their name there and on your statement. Your booking reference is <b>${escHtml(p.ref)}</b>.</p></div>`;
+    <p class="site-smallprint">Your amount, <b>${escHtml(p.amount)}</b>, is already filled in on the secure payment page. It is run by The CO Kitchens, the kitchen where FITO is made, so you'll see their name there and on your statement. Your booking reference is <b>${escHtml(p.ref)}</b>.</p></div>`;
 }
 
 /* The box as flat fields: one column per flavour, easy to count up for the kitchen or investors. */
@@ -159,10 +162,10 @@ function showReserveForm(skipCheck){
         const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
         const pp=planOf(box), pre=sub&&pp.boxes>0;
         // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box).
-        const pay=inDubai&&PAY_URL?{amount:payMoney(pre?box.prepaid:box.total),what:pre?`for all ${pp.boxes} deliveries`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef)}:null;
+        const pay=inDubai&&PAY_URL?{amount:payMoney(pre?box.prepaid:box.total),what:pre?`for all ${pp.boxes} deliveries`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef,pre?box.prepaid:box.total)}:null;
         body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
           ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
-          : `<p>${res.status==='unknown'?`Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp.`:`Your ${sub?'soupscription':'box'} for ${when} is saved.`} Pay now to confirm it.</p>${payPanel(pay)}<p class="site-smallprint">Can't pay right now? We'll also send this link on WhatsApp.${sub&&!pre?' After your first box, we send a payment link before each one.':''}</p>`}</div>`;
+          : `<p>${res.status==='unknown'?`Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp.`:`Your ${sub?'soupscription':'box'} for ${when} is saved.`} Pay now to confirm it.</p>${payPanel(pay)}`}</div>`;
         // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
         const summary=sub?`Soupscription, ${box.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${box.packs} packs, ${when}.`;
         try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:box.first,at:Date.now(),pay}));}catch(_){}

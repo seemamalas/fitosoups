@@ -4,7 +4,7 @@ const LEGAL={
 <h4>Who we are</h4>
 <p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups.</p>
 <h4>Booking and payment</h4>
-<p>When you book a box or a soupscription, you pay on a secure payment page straight after booking, by card or Apple Pay. Payments are taken through Stripe by The CO Kitchens, the licensed kitchen where FITO is made, so their name appears on the payment page and on your statement. Your order is confirmed once it is paid. If you can't pay straight away, we also send the link on WhatsApp. If you reserved before card payments opened, we send your payment link by email and WhatsApp before your delivery. The terms on this page when you pay are the ones that apply to your order.</p>
+<p>When you book a box or a soupscription, you pay on a secure payment page straight after booking, by card or Apple Pay. Payments are taken through Stripe by The CO Kitchens, the licensed kitchen where FITO is made, so their name appears on the payment page and on your statement. Your order is confirmed once it is paid. If you reserved before card payments opened, we send your payment link by email and WhatsApp before your delivery. The terms on this page when you pay are the ones that apply to your order.</p>
 <h4>Ordering</h4>
 <p>A pack contains four frozen soup cubes, about two bowls. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
 <h4>Subscriptions</h4>

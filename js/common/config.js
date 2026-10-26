@@ -4,7 +4,7 @@
 const SITE_NAME = "FITO Soups";
 const SITE_URL = "https://fitosoups.com";
 /* Where early reservations are sent (see js/common/reserve.js). Empty = preview mode. */
-/* Card and Apple Pay checkout: The CO Kitchens' Stripe payment link (the customer types the amount).
+/* Card and Apple Pay checkout: The CO Kitchens' Stripe payment link (each customer's exact amount is filled in).
    Each customer gets their own copy with their email and booking reference added (see reserve.js). */
 const PAY_URL = "https://payments.thecokitchens.com/b/00w5kEffjc9mfPNcCffw50a";
 const WAITLIST_URL = "https://script.google.com/macros/s/AKfycbx-CN903lkPbO2yXMGGQ22BQ9b5lyvQwjCmlWtKP15uNa69neJlCp6YQuztqn1mmpZU/exec";
