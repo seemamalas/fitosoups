@@ -86,7 +86,7 @@ function payPanel(p){
   if(!p||!p.link) return '';
   return `<div class="reserve-pay"><p class="reserve-pay__amount">${escHtml(p.amount)}</p><p class="reserve-pay__what">${escHtml(p.what)}</p>
     <a class="site-btn reserve-pay__btn" href="${escHtml(p.link)}" target="_blank" rel="noopener">Pay ${escHtml(p.amount)} now</a>
-    <p class="site-smallprint">Your amount, <b>${escHtml(p.amount)}</b>, is already filled in on the secure payment page. It is run by The CO Kitchens, the kitchen where FITO is made, so you'll see their name there and on your statement. Your booking reference is <b>${escHtml(p.ref)}</b>.</p></div>`;
+    <p class="site-smallprint">Secure payment by The CO Kitchens, where FITO is made, so you'll see their name on your statement.</p></div>`;
 }
 
 /* The box as flat fields: one column per flavour, easy to count up for the kitchen or investors. */
@@ -167,7 +167,7 @@ function showReserveForm(skipCheck){
       : `<p>Your ${sub?'soupscription':'box'} for ${when} is saved. ${opened?'Your secure payment page has opened in a new tab.':'Pay now to confirm it.'}</p>${payPanel(pay)}`}</div>`;
     // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
     const summary=sub?`Soupscription, ${booked.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${booked.packs} packs, ${when}.`;
-    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay}));}catch(_){}
+    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay,payOpened:!!opened}));}catch(_){}
     box=null; saveBox(); document.getElementById('cartN').textContent=0;
     document.dispatchEvent(new CustomEvent('fito:box-emptied'));
     // Save it, trying again a few times if Google is slow or busy.

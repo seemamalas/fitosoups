@@ -11,6 +11,23 @@ function lastReservation(){
   try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); if(!r) return null;
     const day=new Date(r.first); day.setDate(day.getDate()+1); return day>=new Date()?r:null;}catch(_){return null;}
 }
+/* Adds to the saved booking, e.g. {payOpened:true} once the payment page has been opened, or {paid:true}. */
+function updateReservation(patch){
+  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); if(!r) return; Object.assign(r,patch); localStorage.setItem('fito_reserved',JSON.stringify(r));}catch(_){}
+}
+/* Back from Stripe: the payment link sends paying customers to fitosoups.com/?paid=... (set by The CO Kitchens),
+   so the booking shows as paid here and the Pay button doesn't come back. */
+(()=>{try{const q=new URLSearchParams(location.search); if(!q.has('paid')) return;
+  updateReservation({paid:true,paidAt:Date.now()});
+  // Tell the sheet, so the paid box ticks itself. A read-only request: a sheet script without the
+  // 'paid' step just ignores it, so nothing can be overwritten.
+  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'), ref=r&&r.pay&&r.pay.ref;
+    if(ref&&typeof askSheet==='function'&&ON_LIVE_SITE) askSheet({action:'paid',ref,session:(q.get('paid')||'').slice(0,90)}).catch(()=>{});}catch(_){}
+  history.replaceState(null,'',location.pathname+location.hash);
+  window.addEventListener('load',()=>setTimeout(()=>toast('Thank you, your payment went through. See you on delivery day!'),500));
+}catch(_){}})();
+/* Pressing a Pay button counts as opening the payment page. */
+document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.reserve-pay__btn,.js-paylink')) updateReservation({payOpened:true}); });
 function loadBox(){
   try{const r=localStorage.getItem('fito_box'); if(r) box=JSON.parse(r);}catch(_){box=null;}
   return box;
@@ -24,7 +41,13 @@ function updateCart(force){
   if(force!==true&&body.querySelector('#reserveForm,.reserve-full,.reserve-done')) return;
   if(!box&&lastReservation()){
     const r=lastReservation();
-    body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">You're booked.</p><p>${escHtml(r.summary)}</p>${r.pay?`${payPanel(r.pay)}<p>Already paid? Thank you, there's nothing more to do.</p>`:`<p>We'll send your payment link by email and WhatsApp before then.</p>`}<p>To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
+    // Paid: just a thank you. Payment page already opened: a thank you, with a small link in case it didn't go through.
+    // Otherwise the full Pay panel.
+    const payPart=r.paid?`<p class="cart-reserved__paid">Paid. Thank you, there's nothing more to do.</p>`
+      :r.pay&&r.payOpened?`<p>Thank you! Once your payment has gone through, there's nothing more to do.</p><p class="site-smallprint">Payment didn't go through? <a class="js-paylink" href="${escHtml(r.pay.link)}" target="_blank" rel="noopener">Pay ${escHtml(r.pay.amount)} here</a>.</p>`
+      :r.pay?`${payPanel(r.pay)}<p>Already paid? Thank you, there's nothing more to do.</p>`
+      :`<p>We'll send your payment link by email and WhatsApp before then.</p>`;
+    body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">${r.paid?"You're booked and paid.":"You're booked."}</p><p>${escHtml(r.summary)}</p>${payPart}<p>To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
     foot.hidden=true; return;
   }
   if(!box){

@@ -131,7 +131,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .cart-empty{text-align:center;color:var(--soft);padding:56px 20px}
 .cart-reserved{color:var(--ink2);display:grid;gap:10px;line-height:1.55}
 .cart-reserved__title{font-family:var(--disp);font-weight:600;font-size:1.3rem;color:var(--ink)}
-.cart-reserved a{color:var(--terra)}
+.cart-reserved a:not(.site-btn){color:var(--terra)}
+.cart-reserved__paid{color:var(--ink);font-weight:500}
 .cart-total{display:flex;justify-content:space-between;margin:0 0 14px;padding:0;border:none;
   font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink)}
 .cart-checkout{width:100%}
