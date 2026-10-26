@@ -147,32 +147,42 @@ function showReserveForm(skipCheck){
     const btn=form.querySelector('.reserve-form__submit');
     const name=form.rName.value.trim(), area=form.rArea.value, inDubai=area!=='outside';
     const bookingRef=newBookingRef(), email=form.rEmail.value.trim();
-    btn.disabled=true; btn.textContent='Booking…'; btn.classList.add('is-busy');
-    // The sheet can take a while (it checks the slot is still free), so after 3 seconds say so.
-    const wait=form.querySelector('#rWait');
-    const slow=setTimeout(()=>{btn.textContent='Saving your place…'; if(wait) wait.hidden=false;},3000);
-    const stop=()=>{clearTimeout(slow); btn.classList.remove('is-busy'); if(wait) wait.hidden=true;};
-    sendReservation({source:'Box builder',booking_ref:bookingRef,name,phone:form.rPhone.value.trim(),email,
-      lives_in:inDubai?'Dubai':'Outside Dubai',area:area==='other'?'Other Dubai area':area==='outside'?'':area,address:form.rAddress.value.trim(),...boxFields(box)})
-      .then(res=>{
-        stop();
-        if(res.status==='full'||res.status==='unavailable'){ showSlotFull(res.status,true); return; }
-        typed={};
-        const first=name.split(' ')[0];
-        const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
-        const pp=planOf(box), pre=sub&&pp.boxes>0;
-        // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box).
-        const pay=inDubai&&PAY_URL?{amount:payMoney(pre?box.prepaid:box.total),what:pre?`for all ${pp.boxes} deliveries`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef,pre?box.prepaid:box.total)}:null;
-        body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
-          ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
-          : `<p>${res.status==='unknown'?`Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp.`:`Your ${sub?'soupscription':'box'} for ${when} is saved.`} Pay now to confirm it.</p>${payPanel(pay)}`}</div>`;
-        // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
-        const summary=sub?`Soupscription, ${box.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${box.packs} packs, ${when}.`;
-        try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:box.first,at:Date.now(),pay}));}catch(_){}
-        box=null; saveBox(); document.getElementById('cartN').textContent=0;
-        document.dispatchEvent(new CustomEvent('fito:box-emptied'));
-      })
-      .catch(()=>{stop();btn.disabled=false;btn.textContent='Book and pay';toast("That didn't go through. Please try again.");});
+    btn.disabled=true;
+    const first=name.split(' ')[0];
+    const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
+    const pp=planOf(box), pre=sub&&pp.boxes>0;
+    const due=pre?box.prepaid:box.total;
+    // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box).
+    const pay=inDubai&&PAY_URL?{amount:payMoney(due),what:pre?`for all ${pp.boxes} deliveries`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef,due)}:null;
+    const fields={source:'Box builder',booking_ref:bookingRef,name,phone:form.rPhone.value.trim(),email,
+      lives_in:inDubai?'Dubai':'Outside Dubai',area:area==='other'?'Other Dubai area':area==='outside'?'':area,address:form.rAddress.value.trim(),...boxFields(box)};
+    // No waiting: the payment page opens straight away in a new tab (it has to open inside the click,
+    // or the browser blocks it), and the booking is saved to the sheet in the background on this page.
+    let opened=null;
+    if(pay){ try{ opened=window.open(pay.link,'_blank'); if(opened) opened.opener=null; }catch(_){} }
+    const booked={...box,items:{...box.items},tops:{...(box.tops||{})}}, keptTyped={...typed};
+    typed={};
+    body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
+      ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
+      : `<p>Your ${sub?'soupscription':'box'} for ${when} is saved. ${opened?'Your secure payment page has opened in a new tab.':'Pay now to confirm it.'}</p>${payPanel(pay)}`}</div>`;
+    // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
+    const summary=sub?`Soupscription, ${booked.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${booked.packs} packs, ${when}.`;
+    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay}));}catch(_){}
+    box=null; saveBox(); document.getElementById('cartN').textContent=0;
+    document.dispatchEvent(new CustomEvent('fito:box-emptied'));
+    // Save it, trying again a few times if Google is slow or busy.
+    const attempt=n=>sendReservation(fields).catch(err=>{ if(n>=3) throw err; return new Promise(r=>setTimeout(r,[2000,5000,9000][n])).then(()=>attempt(n+1)); });
+    attempt(0).then(res=>{
+      if(res.status==='full'||res.status==='unavailable'){
+        // Someone took the last place a moment earlier (rare): give the box back and let them pick another time.
+        try{localStorage.removeItem('fito_reserved');}catch(_){}
+        box=booked; typed=keptTyped; saveBox(); document.getElementById('cartN').textContent=box.packs;
+        showSlotFull(res.status,true);
+      }
+    }).catch(()=>{
+      try{localStorage.setItem('fito_unsaved',JSON.stringify({...fields,saved_late:true}));}catch(_){}
+      toast("We couldn't save your booking just now. Please message us on WhatsApp and we'll sort it.");
+    });
   };
   form.rName.focus();
 }
@@ -183,7 +193,7 @@ function showSlotFull(why,afterSubmit){
   const first=new Date(box.first), when=`${box.slot} on ${fmtLong(first)}`;
   const text=why==='unavailable'
     ? `${when} can't be booked any more. Deliveries need to be booked at least a week ahead.`
-    : `${when} ${afterSubmit?'filled up just before you, so nothing has been booked.':'has just filled up.'}`;
+    : `${when} ${afterSubmit?'filled up just before you. If you already paid, your payment covers the new time you pick.':'has just filled up.'}`;
   body.innerHTML=`<div class="reserve-full" role="alert">
     <p class="reserve-full__title">${why==='unavailable'?'That time is no longer open.':'That time is now full.'}</p>
     <p>${escHtml(text)} Please pick another day or time, then reserve again. Anything you've typed is kept.</p>
@@ -193,3 +203,7 @@ function showSlotFull(why,afterSubmit){
   body.querySelector('#pickAgain').onclick=()=>{closeDrawer();document.dispatchEvent(new CustomEvent('fito:pick-slot',{detail:{day:isoDay(first),slot:box.slot}}));};
   const mine=body.querySelector('#alreadyMine'); if(mine) mine.onclick=()=>showReserveForm(true);
 }
+
+/* A booking that couldn't be saved last time (Google was down): try again quietly on the next visit. */
+(()=>{try{const u=JSON.parse(localStorage.getItem('fito_unsaved')||'null'); if(!u||!ON_LIVE_SITE) return;
+  sendReservation(u).then(()=>localStorage.removeItem('fito_unsaved')).catch(()=>{});}catch(_){}})();
