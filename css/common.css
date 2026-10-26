@@ -158,6 +158,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .reserve-done{padding:48px 8px;text-align:center}
 .reserve-done__title{font-family:var(--disp);font-size:1.5rem;font-weight:600;color:var(--terra);margin:0 0 10px}
 .reserve-done p{color:var(--ink2)}
+.reserve-done{padding-top:32px}
+.reserve-pay{margin:18px 0 14px;padding:18px 16px;border:1.5px solid var(--rule);border-radius:14px;background:#fff;display:grid;gap:6px;text-align:center}
+.reserve-pay__amount{font-family:var(--disp);font-size:1.9rem;font-weight:600;color:var(--ink);margin:0;line-height:1.1}
+.reserve-pay__what{margin:0 0 6px;color:var(--ink2);font-size:.92rem}
+.reserve-pay__btn{width:100%;text-align:center}
+.reserve-pay .site-smallprint{margin:6px 0 0}
+.reserve-done .site-smallprint{font-size:.82rem}
+.cart-reserved .reserve-pay{text-align:left}
 .reserve-full{padding:40px 8px;text-align:center}
 .reserve-full__title{font-family:var(--disp);font-size:1.4rem;font-weight:600;color:var(--terra);margin:0 0 10px}
 .reserve-full p{color:var(--ink2)}

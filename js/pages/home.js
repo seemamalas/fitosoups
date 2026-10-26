@@ -318,7 +318,7 @@ function render(){
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One-time box':mode!=='sub'?'Reserve this box':'Reserve my soupscription';}
+  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One-time box':mode!=='sub'?'Book this box':'Book my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
@@ -326,7 +326,7 @@ function render(){
   if(dc){
     dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
     ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} deliveries` : `${money(total)} · about ${n*SERV} bowls`;
-    db.textContent = n>=MIN ? 'Reserve' : 'See box';
+    db.textContent = n>=MIN ? 'Book' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
   const sl=document.getElementById('schedLine');
@@ -346,9 +346,9 @@ function render(){
     nudge.textContent=`Add ${next.min-n} more pack${next.min-n>1?'s':''} and your saving goes from ${Math.round(pct*100)}% to ${Math.round(next.pct*100)}%.`;
   }else nudge.hidden=true;
   // Short on purpose: the full rules live in the Terms, linked right after this line.
-  document.getElementById('terms').textContent=mode!=='sub'?'No payment today.'
-    :pre?`No payment today. One payment for all ${pp.boxes} deliveries.`
-    :'No payment today.';
+  document.getElementById('terms').textContent=mode!=='sub'?'Pay by card or Apple Pay when you book.'
+    :pre?`One payment for all ${pp.boxes} deliveries, when you book.`
+    :'Pay for your first box when you book.';
 }
 (function(){
   const dock=document.getElementById('dock'), sec=document.getElementById('build'), sum=document.getElementById('summary');

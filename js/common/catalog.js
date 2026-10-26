@@ -25,15 +25,15 @@ const delFor=m=>m==='sub'?0:DELIVERY;
 const FLAVOURS=[
   {id:'caramel',name:'Caramel',c:'#DB7814',sub:'Sweet potato & butternut squash',tag:'Best seller',avail:true,
    desc:'Velvety and naturally sweet, warmed through with cinnamon and nutmeg.',
-   ing:'Butternut squash, sweet potato, red onion, honey, cinnamon, nutmeg, olive oil, salt, black pepper.',
+   ing:'Butternut squash, water, sweet potato, red onion, olive oil, honey, salt, cinnamon, nutmeg, black pepper.',
    diet:['Vegetarian','No gluten'],note:'Contains honey',ar:''},
-  {id:'green',name:'Green Goddess',c:'#819C35',sub:'Pea, courgette & broccoli',tag:'Fan favourite',avail:true,
-   desc:'Bright and green, finished with a lift of lemon that keeps it fresh.',
-   ing:'Peas, courgette, broccoli, leek, white onion, shallots, olive oil, salt, black pepper, lemon juice.',
+  {id:'green',name:'Green Goddess',c:'#819C35',sub:'Pea, broccoli & basil',tag:'Fan favourite',avail:true,
+   desc:'Bright and green: sweet peas, broccoli and fresh basil. Best with a squeeze of lemon.',
+   ing:'Peas, water, white onion, broccoli, courgette, olive oil, basil, salt, black pepper.',
    diet:['Vegan','No gluten'],note:'',ar:''},
   {id:'addas',name:"B'addass",c:'#C0662B',sub:'Red lentil with cumin',tag:'TETA LOVES THIS',avail:true,
    desc:'Red lentils, carrot and cumin, with a little rice for body.',
-   ing:'Red lentils, red onion, carrot, rice, olive oil, cumin, white pepper, black pepper, salt.',
+   ing:'Water, red onion, red lentils, carrot, rice, olive oil, salt, cumin, white pepper, black pepper.',
    diet:['Vegan','No gluten'],note:'',ar:'عدس'}
 ];
 const TOPPINGS=[

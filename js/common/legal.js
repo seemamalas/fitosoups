@@ -3,8 +3,8 @@ const LEGAL={
  terms:{t:'Terms & Conditions',b:`
 <h4>Who we are</h4>
 <p>${SITE_NAME}, Dubai, United Arab Emirates. Contact us on <a href="https://wa.me/971556058152">WhatsApp</a> or on Instagram at @fitosoups.</p>
-<h4>Reservations</h4>
-<p>Reserving a box or a soupscription on this site is free and is not yet an order. Before your delivery date we send you a payment link by email and WhatsApp, and your order is confirmed once it is paid. You can cancel a reservation at any time by messaging us. The terms on this page when you pay are the ones that apply to your order.</p>
+<h4>Booking and payment</h4>
+<p>When you book a box or a soupscription, you pay on a secure payment page straight after booking, by card or Apple Pay. Payments are taken through Stripe by The CO Kitchens, the licensed kitchen where FITO is made, so their name appears on the payment page and on your statement. Your order is confirmed once it is paid. If you can't pay straight away, we also send the link on WhatsApp. If you reserved before card payments opened, we send your payment link by email and WhatsApp before your delivery. The terms on this page when you pay are the ones that apply to your order.</p>
 <h4>Ordering</h4>
 <p>A pack contains four frozen soup cubes, about two bowls. Prices are in UAE dirhams and include VAT where it applies. An order is confirmed once we accept it; if we cannot fulfil a flavour we will contact you and offer a swap or a refund.</p>
 <h4>Subscriptions</h4>
@@ -28,7 +28,7 @@ const LEGAL={
 <h4>Why</h4>
 <p>To cook the right soup, deliver it to the right door, and tell you when your next box is coming. If you join the early subscriber list we will email you about the launch, and you can unsubscribe from any message.</p>
 <h4>Payment</h4>
-<p>When card payments go live they will be handled by a licensed payment provider. Your card details go straight to them, and FITO never sees or stores them.</p>
+<p>Card and Apple Pay payments are handled by Stripe, a licensed payment provider, for The CO Kitchens, the kitchen where FITO is made. Your card details go straight to Stripe, and FITO never sees or stores them.</p>
 <h4>Sharing</h4>
 <p>We do not sell your data. We share only what a delivery needs, and only with a delivery partner if we use one. Payment details are handled by the payment provider under its own privacy policy.</p>
 <h4>Keeping it</h4>

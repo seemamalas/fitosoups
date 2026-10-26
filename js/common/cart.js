@@ -24,7 +24,7 @@ function updateCart(force){
   if(force!==true&&body.querySelector('#reserveForm,.reserve-full,.reserve-done')) return;
   if(!box&&lastReservation()){
     const r=lastReservation();
-    body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">You're on the list.</p><p>${escHtml(r.summary)}</p><p>We'll send your payment link by email and WhatsApp before then. To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
+    body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">You're booked.</p><p>${escHtml(r.summary)}</p>${r.pay?`${payPanel(r.pay)}<p>Already paid? Thank you, there's nothing more to do.</p>`:`<p>We'll send your payment link by email and WhatsApp before then.</p>`}<p>To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
     foot.hidden=true; return;
   }
   if(!box){
@@ -53,10 +53,10 @@ function updateCart(force){
   document.getElementById('dTerms').textContent=box.mode!=='sub' ? 'One-time box · no commitment'
     : pre ? `${pp.boxes} boxes, paid up front · first box ${fmt(new Date(box.first))}, ${box.slot||''} · pause up to ${PREPAY_PAUSES}`
     : `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · minimum 2 boxes, then skip or cancel up to 3 days before`;
-  if(box.reserved) document.getElementById('dTerms').textContent='Reserved. Your payment link comes by email and WhatsApp before delivery.';
+  if(box.reserved) document.getElementById('dTerms').textContent='Booked. To change anything, message us on WhatsApp.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
   co.disabled=short;
-  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to reserve`:box.chosen===false?'Choose Soupscription or One-time box':box.reserved?'Update my reservation':'Reserve, pay later';
+  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to book`:box.chosen===false?'Choose Soupscription or One-time box':box.reserved?'Update my booking':'Book and pay';
   if(short) document.getElementById('dTerms').textContent='Four packs minimum, then as many as you like.';
   body.querySelector('#clearBox').onclick=()=>{
     box=null;

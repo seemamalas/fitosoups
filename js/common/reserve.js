@@ -1,5 +1,5 @@
-/* Reservations: early sign-ups, no payment taken.
-   Used by the cart drawer: the visitor reserves the box they built.
+/* Booking and paying. Used by the cart drawer: the visitor books the box they built, then pays
+   on The CO Kitchens' Stripe page (PAY_URL in config.js), with their email and booking reference filled in.
 
    Where reservations go is set once, in site.config.json, as WAITLIST_URL:
    the Google Sheet web app URL (see google-sheet-script.gs), a form service such as Formspree,
@@ -69,6 +69,23 @@ function sendReservation(fields){
     .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return {preview:false,status:'booked'};});
 }
 
+/* Exact amount to pay: whole dirhams when it is round, otherwise with fils, so it matches what they type. */
+const payMoney=n=>{const r=Math.round(n*100)/100;return r%1?'AED '+r.toFixed(2):money(r);};
+/* A short booking reference, e.g. FITO-K3X9Q2, sent to the sheet and to Stripe so each payment matches its booking. */
+const newBookingRef=()=>'FITO-'+(Date.now().toString(36).slice(-5)+Math.random().toString(36).slice(2,4)).toUpperCase();
+/* This customer's own copy of the payment link: their email filled in, and the booking reference attached. */
+function payLinkFor(email,ref){
+  if(!PAY_URL) return '';
+  try{const u=new URL(PAY_URL); if(email) u.searchParams.set('prefilled_email',email); if(ref) u.searchParams.set('client_reference_id',ref); return u.toString();}catch(_){return PAY_URL;}
+}
+/* The panel with the amount and the Pay button, shown after booking and again in the Box drawer. */
+function payPanel(p){
+  if(!p||!p.link) return '';
+  return `<div class="reserve-pay"><p class="reserve-pay__amount">${escHtml(p.amount)}</p><p class="reserve-pay__what">${escHtml(p.what)}</p>
+    <a class="site-btn reserve-pay__btn" href="${escHtml(p.link)}" target="_blank" rel="noopener">Pay ${escHtml(p.amount)} now</a>
+    <p class="site-smallprint">On the secure payment page, enter <b>${escHtml(p.amount)}</b>. It is run by The CO Kitchens, the kitchen where FITO is made, so you'll see their name there and on your statement. Your booking reference is <b>${escHtml(p.ref)}</b>.</p></div>`;
+}
+
 /* The box as flat fields: one column per flavour, easy to count up for the kitchen or investors. */
 function boxFields(b){
   // The sheet counts anything starting "Soupscription" as a subscriber (slots, First 50), so keep that word first.
@@ -100,12 +117,12 @@ function showReserveForm(skipCheck){
     </div>
     <label class="reserve-form__field">Full name<input id="rName" autocomplete="name" value="${v('name')}" required></label>
     <label class="reserve-form__field">Phone (WhatsApp)<input id="rPhone" type="tel" autocomplete="tel" placeholder="+971 5X XXX XXXX" value="${v('phone')}" required></label>
-    <label class="reserve-form__field"><span>Email <small>(your payment link goes here)</small></span><input id="rEmail" type="email" autocomplete="email" value="${v('email')}" required></label>
+    <label class="reserve-form__field"><span>Email <small>(for your receipt)</small></span><input id="rEmail" type="email" autocomplete="email" value="${v('email')}" required></label>
     <label class="reserve-form__field">Area<select id="rArea" required><option value="" disabled selected>Choose your area in Dubai</option>${DUBAI_AREAS.map(a=>`<option>${a}</option>`).join('')}<option value="other">Another area in Dubai</option><option value="outside">Outside Dubai</option></select></label>
     <label class="reserve-form__field">Address<input id="rAddress" autocomplete="street-address" placeholder="Building or villa, flat number, street" value="${v('address')}" required></label>
-    <button class="site-btn reserve-form__submit" type="submit">Reserve, pay later</button>
+    <button class="site-btn reserve-form__submit" type="submit">Book and pay</button>
     <p class="reserve-form__wait" id="rWait" role="status" hidden>This takes a few seconds. Please keep this page open.</p>
-    <p class="site-smallprint">No payment today. We'll email and WhatsApp you a payment link${pre?` for all ${pp.boxes} deliveries`:''} before your ${sub?'first box':'delivery'}, and hold your date until then.${sub?' Minimum 2 deliveries.':''}</p>
+    <p class="site-smallprint">Next, you pay securely by card or Apple Pay${pre?`, one payment for all ${pp.boxes} deliveries`:sub?' for your first box':''}.${sub?' Minimum 2 deliveries.':''}</p>
     <button class="site-btn site-btn--line reserve-form__back" type="button" id="rBack">Back to my box</button>
   </form>`;
   body.querySelector('#rBack').onclick=()=>updateCart(true);
@@ -126,12 +143,13 @@ function showReserveForm(skipCheck){
     e.preventDefault();
     const btn=form.querySelector('.reserve-form__submit');
     const name=form.rName.value.trim(), area=form.rArea.value, inDubai=area!=='outside';
-    btn.disabled=true; btn.textContent='Reserving…'; btn.classList.add('is-busy');
+    const bookingRef=newBookingRef(), email=form.rEmail.value.trim();
+    btn.disabled=true; btn.textContent='Booking…'; btn.classList.add('is-busy');
     // The sheet can take a while (it checks the slot is still free), so after 3 seconds say so.
     const wait=form.querySelector('#rWait');
     const slow=setTimeout(()=>{btn.textContent='Saving your place…'; if(wait) wait.hidden=false;},3000);
     const stop=()=>{clearTimeout(slow); btn.classList.remove('is-busy'); if(wait) wait.hidden=true;};
-    sendReservation({source:'Box builder',name,phone:form.rPhone.value.trim(),email:form.rEmail.value.trim(),
+    sendReservation({source:'Box builder',booking_ref:bookingRef,name,phone:form.rPhone.value.trim(),email,
       lives_in:inDubai?'Dubai':'Outside Dubai',area:area==='other'?'Other Dubai area':area==='outside'?'':area,address:form.rAddress.value.trim(),...boxFields(box)})
       .then(res=>{
         stop();
@@ -139,19 +157,19 @@ function showReserveForm(skipCheck){
         typed={};
         const first=name.split(' ')[0];
         const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
-        body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">You're on the list${first?', '+escHtml(first):''}.</p><p>${!inDubai
-          ? `We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.`
-          : res.status==='unknown'
-          ? `Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp and email you a payment link before then. Nothing is charged until you pay it.`
-          : `We've saved your ${sub?'soupscription':'box'} for ${when}. Before then we'll email you a payment link and send it on WhatsApp. Nothing is charged until you pay it.`}</p></div>`;
-        // Reserved, so the box is no longer "in the basket": remember what they booked, then empty it.
         const pp=planOf(box), pre=sub&&pp.boxes>0;
+        // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box).
+        const pay=inDubai&&PAY_URL?{amount:payMoney(pre?box.prepaid:box.total),what:pre?`for all ${pp.boxes} deliveries`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef)}:null;
+        body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
+          ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
+          : `<p>${res.status==='unknown'?`Thanks, we have your details for ${when}. We'll confirm your delivery time on WhatsApp.`:`Your ${sub?'soupscription':'box'} for ${when} is saved.`} Pay now to confirm it.</p>${payPanel(pay)}<p class="site-smallprint">Can't pay right now? We'll also send this link on WhatsApp.${sub&&!pre?' After your first box, we send a payment link before each one.':''}</p>`}</div>`;
+        // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
         const summary=sub?`Soupscription, ${box.packs} packs${pre?`, ${pp.boxes} deliveries prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${box.packs} packs, ${when}.`;
-        try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:box.first,at:Date.now()}));}catch(_){}
+        try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:box.first,at:Date.now(),pay}));}catch(_){}
         box=null; saveBox(); document.getElementById('cartN').textContent=0;
         document.dispatchEvent(new CustomEvent('fito:box-emptied'));
       })
-      .catch(()=>{stop();btn.disabled=false;btn.textContent='Reserve, pay later';toast("That didn't go through. Please try again.");});
+      .catch(()=>{stop();btn.disabled=false;btn.textContent='Book and pay';toast("That didn't go through. Please try again.");});
   };
   form.rName.focus();
 }
