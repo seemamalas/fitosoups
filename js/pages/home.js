@@ -262,9 +262,9 @@ document.getElementById('planRow').addEventListener('click',e=>{
 // The line under the toggles: what this way of paying means, in one sentence.
 function planNote(){
   if(mode!=='sub') return 'A single delivery. No commitment, no discount.';
-  if(plan==='go') return 'A box every 4 weeks, paid box by box. Minimum 2 boxes, then skip, pause or cancel up to 3 days before a box.';
+  if(plan==='go') return 'Pay for each box as it comes. Minimum 2 boxes.';
   const p=PLANS[plan];
-  return `${p.boxes} boxes, one every 4 weeks, paid up front with an extra ${Math.round(p.extra*100)}% off. Minimum 2 boxes; stop after that and we refund the rest.`;
+  return `Pay once for ${p.boxes} boxes, one every 4 weeks, and save an extra ${Math.round(p.extra*100)}%.`;
 }
 document.getElementById('tOne').onclick=()=>{mode='one';modeChosen=true;document.querySelector('.box-builder__toggle').classList.remove('is-nudge');setSeg();applySlots();};
 function setSeg(){
@@ -314,18 +314,18 @@ function render(){
   // One big line: the 4-weekly price, or for a prepaid plan the one payment, with the price a box underneath.
   document.getElementById('sTotal').textContent=money(pre?prePay:total);
   document.getElementById('sTotLbl').textContent=pre?'Up front':mode==='sub'?'Every 4 weeks':'Total';
-  document.getElementById('sPer').innerHTML=!n?'':pre?`For ${pp.boxes} deliveries, one every 4 weeks<br>${money(prePay/pp.boxes)} each instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
+  document.getElementById('sPer').innerHTML=!n?'':pre?`For ${pp.boxes} boxes, one every 4 weeks<br>${money(prePay/pp.boxes)} each instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One-time box':mode!=='sub'?'Book this box':'Book my soupscription';}
+  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One\u2011time box':mode!=='sub'?'Book this box':'Book my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
   const dc=document.getElementById('dockCount'), ds2=document.getElementById('dockSub'), db=document.getElementById('dockBtn');
   if(dc){
     dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
-    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} deliveries` : `${money(total)} · about ${n*SERV} bowls`;
+    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} boxes` : `${money(total)} · about ${n*SERV} bowls`;
     db.textContent = n>=MIN ? 'Book' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
@@ -347,7 +347,7 @@ function render(){
   }else nudge.hidden=true;
   // Short on purpose: the full rules live in the Terms, linked right after this line.
   document.getElementById('terms').textContent=mode!=='sub'?'Pay by card or Apple Pay when you book.'
-    :pre?`One payment for all ${pp.boxes} deliveries, when you book.`
+    :pre?`One payment for all ${pp.boxes} boxes, when you book.`
     :'Pay for your first box when you book.';
 }
 (function(){
@@ -387,7 +387,7 @@ function nudgeChoice(){
 }
 document.addEventListener('fito:choose-mode',nudgeChoice);
 // The early subscriber button opens the builder on a soupscription, since the perks come with one.
-document.getElementById('earlyCta').addEventListener('click',()=>{mode='sub';modeChosen=true;setSeg();render();});
+document.getElementById('earlyCta').addEventListener('click',()=>{mode='sub';modeChosen=true;setSeg();applySlots();});
 
 const REVIEWS=[
   ["I am literally just sitting down having my bowl of Fito. And omg. I have no notes.","Derv"],

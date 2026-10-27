@@ -162,19 +162,22 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 @media (hover:hover) and (pointer:fine){.box-builder__toggle button[aria-pressed="false"]:hover{border-color:var(--ink)}}
 @media(max-width:420px){.box-builder__toggle button{padding:14px 14px}.box-builder__toggle button b{font-size:1.1rem}}
 .box-builder__toggle-note{font-size:.88rem;color:var(--soft);margin-bottom:24px}
-/* How a soupscription is paid: as you go, or 6 boxes up front. Smaller, because it is the second choice. */
-.box-builder__plan{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px;max-width:640px}
+/* How a soupscription is paid. It belongs to Soupscription, so it hangs off that card: a small tinted panel
+   with a notch pointing up at it, and a two-way switch inside (a switch always has one side on, like a light switch). */
+.box-builder__plan{position:relative;max-width:640px;margin:2px 0 26px;background:var(--tint);border-radius:14px;padding:14px 18px 12px}
 .box-builder__plan[hidden]{display:none}
-.box-builder__plan button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;
-  border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:14px;padding:10px 16px;font-family:inherit;min-width:170px}
-.box-builder__plan button b{font-weight:600;font-size:.95rem}
-.box-builder__plan button span{font-size:.78rem;color:var(--soft)}
-.box-builder__plan button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--paper)}
-.box-builder__plan button[aria-pressed="true"] span{color:var(--ink2)}
-@media (hover:hover) and (pointer:fine){.box-builder__plan button:hover{border-color:var(--ink)}}
-.box-builder__plan button{flex:1 1 0;min-width:0}
-/* Prepay sits first, with its saving in green so it catches the eye. */
-.box-builder__plan button.is-deal[aria-pressed="false"] span{color:var(--sage);font-weight:600}
+.box-builder__plan::before{content:"";position:absolute;top:-7px;left:calc(25% - 9px);width:14px;height:14px;background:var(--tint);transform:rotate(45deg);border-radius:2px}
+.box-builder__plan-row{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
+.box-builder__plan-label{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.plan-switch{display:inline-flex;background:var(--tint2);border-radius:999px;padding:3px}
+.plan-switch button{border:0;background:none;border-radius:999px;padding:8px 16px;font-family:inherit;font-size:.88rem;font-weight:500;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.plan-switch button em{font-style:normal;color:var(--sage);font-weight:600}
+.plan-switch button em::before{content:"· ";color:var(--soft)}
+.plan-switch button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(58,46,34,.16)}
+@media (hover:hover) and (pointer:fine){.plan-switch button[aria-pressed="false"]:hover{color:var(--ink)}}
+.box-builder__plan-note{font-size:.82rem;color:var(--ink2);margin:9px 0 0;line-height:1.45;text-wrap:pretty}
+/* Small phones: the two halves share the width, and "5% off" drops under "Prepay 6 boxes". */
+@media(max-width:420px){.box-builder__plan{padding:12px 12px 10px}.plan-switch{width:100%}.plan-switch button{flex:1 1 0;min-width:0;padding:8px 8px;font-size:.84rem;white-space:normal;line-height:1.25}.plan-switch button em{display:block;font-size:.95em}.plan-switch button em::before{content:none}}
 /* Reserve pressed before choosing: the two big buttons give a little shake. */
 .box-builder__toggle.is-nudge button{animation:fitoNudge .5s ease-in-out 2;border-color:var(--terra)}
 @keyframes fitoNudge{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
@@ -193,7 +196,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 
 /* Empty slots in the box line-up */
 .box-art__pack.box-art__pack--ghost{width:24px;height:24px;border:1.4px dashed rgba(58,46,34,.35);background:transparent}
-.box-art__count.box-art__count--ghost{font-size:.78rem;color:var(--soft);white-space:normal;text-align:right;max-width:110px;line-height:1.3}
+.box-art__count.box-art__count--ghost{font-size:.78rem;color:var(--soft);white-space:normal;text-align:right;max-width:110px;line-height:1.3;text-wrap:balance}
 
 /* ---------- "Freezer to bowl" band ---------- */
 .home-section.home-section--compact{padding:44px 0}
@@ -319,7 +322,10 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-summary__row[hidden]{display:none}
 .box-summary__row{display:flex;justify-content:space-between;padding:8px 0;font-size:.95rem;color:var(--ink2)}
 .box-summary__row.box-summary__row--total{border-top:1px solid var(--rule);margin-top:10px;padding-top:16px;
-  font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink)}
+  font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--ink);align-items:baseline;flex-wrap:wrap;gap:2px 12px}
+/* The label (Total, Every 4 weeks, Up front) smaller than the amount, and the amount never split over two lines. */
+.box-summary__row--total #sTotLbl{font-size:1.15rem;font-weight:600}
+.box-summary__row--total #sTotal{margin-left:auto;white-space:nowrap}
 .box-summary__saving{color:var(--sage);font-weight:600}
 .box-summary__per-serving{font-size:.84rem;color:var(--soft);text-align:right;margin-top:-2px}
 .box-summary__nudge{font-size:.87rem;color:var(--terra);margin:16px 0 0;padding-top:14px;border-top:1px solid var(--rule)}

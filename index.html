@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Parisienne&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/common.css?v=36">
+<link rel="stylesheet" href="css/common.css?v=39">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>FITO Soups | Frozen homemade soup cubes delivered in Dubai</title>
@@ -83,7 +83,7 @@
    "brand": {
     "@id": "https://fitosoups.com/#org"
    },
-   "description": "Sweet potato and butternut squash soup, frozen in cubes. Velvety and naturally sweet, with cinnamon and nutmeg. One pack is four cubes, about two bowls. Ingredients: Sweet potato, butternut squash, red onion, honey, cinnamon, nutmeg, olive oil, salt, black pepper.",
+   "description": "Butternut squash and sweet potato soup, frozen in cubes. Velvety and naturally sweet, with cinnamon and nutmeg. One pack is four cubes, about two bowls. Ingredients: Butternut squash, water, sweet potato, red onion, honey, olive oil, salt, cinnamon, nutmeg, black pepper.",
    "category": "Frozen soup",
    "offers": {
     "@type": "Offer",
@@ -103,7 +103,7 @@
    "brand": {
     "@id": "https://fitosoups.com/#org"
    },
-   "description": "Pea, courgette and broccoli soup, frozen in cubes, finished with lemon. One pack is four cubes, about two bowls. Ingredients: Peas, courgette, broccoli, leek, white onion, shallots, olive oil, salt, black pepper, lemon juice.",
+   "description": "Pea, broccoli and basil soup, frozen in cubes. One pack is four cubes, about two bowls. Ingredients: Peas, water, white onion, broccoli, courgette, olive oil, basil, salt, black pepper.",
    "category": "Frozen soup",
    "offers": {
     "@type": "Offer",
@@ -123,7 +123,7 @@
    "brand": {
     "@id": "https://fitosoups.com/#org"
    },
-   "description": "Red lentil soup (addas) with carrot and cumin, frozen in cubes. One pack is four cubes, about two bowls. Ingredients: Red lentils, red onion, carrot, rice, olive oil, cumin, white pepper, black pepper, salt.",
+   "description": "Red lentil soup (addas) with carrot and cumin, frozen in cubes. One pack is four cubes, about two bowls. Ingredients: Water, red onion, red lentils, carrot, rice, olive oil, salt, cumin, white pepper, black pepper.",
    "category": "Frozen soup",
    "offers": {
     "@type": "Offer",
@@ -139,7 +139,7 @@
  ]
 }
 </script>
-<link rel="stylesheet" href="css/pages/home.css?v=36">
+<link rel="stylesheet" href="css/pages/home.css?v=39">
 </head>
 <body>
 
@@ -150,7 +150,7 @@
 
 <nav class="site-nav">
   <div class="site-nav__inner">
-    <a class="site-nav__brand" href="#top"><img class="site-nav__wordmark" src="assets/images/logo-wordmark.png" alt="FITO Soups"></a>
+    <a class="site-nav__brand" href="#top"><img class="site-nav__wordmark" src="assets/images/logo-wordmark.png" alt="FITO Soups" width="1200" height="174"></a>
     <div class="site-nav__links">
       <a href="#flavours">Flavours</a>
       <a href="#build">Build a box</a>
@@ -213,9 +213,15 @@
       <button id="tSub" aria-pressed="false"><b>Soupscription</b><span>Every 4 weeks, up to 18% off</span></button>
       <button id="tOne" aria-pressed="false"><b>One&#8209;time box</b><span>Just once</span></button>
     </div>
-    <div class="box-builder__plan" id="planRow" role="group" aria-label="How to pay" hidden>
-      <button type="button" data-plan="p6" aria-pressed="false" class="is-deal"><b>Prepay 6 deliveries</b><span>Extra 5% off</span></button>
-      <button type="button" data-plan="go" aria-pressed="true"><b>Pay as you go</b><span>Minimum 2 deliveries</span></button>
+    <div class="box-builder__plan" id="planRow" hidden>
+      <div class="box-builder__plan-row">
+        <span class="box-builder__plan-label" id="planLbl">How to pay</span>
+        <div class="plan-switch" role="group" aria-labelledby="planLbl">
+          <button type="button" data-plan="go" aria-pressed="true">Pay as you go</button>
+          <button type="button" data-plan="p6" aria-pressed="false">Prepay 6 boxes <em>5% off</em></button>
+        </div>
+      </div>
+      <p class="box-builder__plan-note" id="segNote"></p>
     </div>
     <div id="schedule" class="box-schedule">
       <div class="box-schedule__cal">
@@ -287,7 +293,7 @@
 <section class="home-section" id="story">
   <div class="site-wrap">
     <div class="home-story">
-      <img class="home-story__photo" src="assets/images/founder-seema.jpg" alt="Seema Malas with a FITO pack and the delivery freezer">
+      <img class="home-story__photo" src="assets/images/founder-seema.jpg" alt="Seema Malas with a FITO pack and the delivery freezer" width="880" height="1100" loading="lazy">
       <div>
         <h2>It started with a weeknight problem.</h2>
         <p>Eating well after work meant either an hour in the kitchen or ordering in. Soup solved it, provided it was made properly and frozen in portions rather than sold by the litre.</p>
@@ -330,7 +336,7 @@
   <div class="site-wrap">
     <div class="site-footer__grid">
       <div class="site-footer__about">
-        <img class="site-footer__logo" src="assets/images/logo-footer.png" alt="FITO Soups">
+        <img class="site-footer__logo" src="assets/images/logo-footer.png" alt="FITO Soups" width="1192" height="170" loading="lazy">
         <p class="site-footer__tagline">Frozen soup cubes, portioned and ready when you are. Made in Dubai, in small batches.</p>
       </div>
       <div><h4>Shop</h4><a href="#build">Build a box</a><a href="#build">Subscribe</a><a href="#flavours">Flavours</a></div>
@@ -371,15 +377,15 @@
 </aside>
 <div class="site-toast" id="toast"></div>
 
-<script src="js/common/config.js?v=36"></script>
-<script src="js/common/utils.js?v=36"></script>
-<script src="js/common/catalog.js?v=36"></script>
-<script src="js/common/art.js?v=36"></script>
-<script src="js/common/toast.js?v=36"></script>
-<script src="js/common/drawers.js?v=36"></script>
-<script src="js/common/legal.js?v=36"></script>
-<script src="js/common/reserve.js?v=36"></script>
-<script src="js/common/cart.js?v=36"></script>
-<script src="js/pages/home.js?v=36"></script>
+<script src="js/common/config.js?v=39"></script>
+<script src="js/common/utils.js?v=39"></script>
+<script src="js/common/catalog.js?v=39"></script>
+<script src="js/common/art.js?v=39"></script>
+<script src="js/common/toast.js?v=39"></script>
+<script src="js/common/drawers.js?v=39"></script>
+<script src="js/common/legal.js?v=39"></script>
+<script src="js/common/reserve.js?v=39"></script>
+<script src="js/common/cart.js?v=39"></script>
+<script src="js/pages/home.js?v=39"></script>
 </body>
 </html>

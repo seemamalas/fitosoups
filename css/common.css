@@ -73,15 +73,15 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .site-nav__inner{max-width:1080px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:24px;position:relative}
 .site-nav__brand{flex-shrink:0;display:flex;align-items:center;gap:10px;text-decoration:none}
 .site-nav__wordmark{height:36px;width:auto}
-@media(max-width:420px){.site-nav__wordmark{height:30px}}
-@media(max-width:420px){.site-nav__inner{padding:10px 18px;gap:16px}.site-nav .site-nav__wordmark{height:27px}.site-nav__links{gap:18px}}
+@media(max-width:480px){.site-nav__wordmark{height:30px}}
+@media(max-width:480px){.site-nav__inner{padding:10px 18px;gap:16px}.site-nav .site-nav__wordmark{height:27px}.site-nav__links{gap:18px}}
 /* Very small phones (320 to 359 px wide): shrink the header so the Box button stays on screen. */
 @media(max-width:359px){.site-nav__inner{padding:9px 12px;gap:10px}.site-nav .site-nav__wordmark{height:22px}.site-nav__links{gap:12px}}
 .site-nav__links{margin-left:auto;display:flex;gap:26px;align-items:center}
 .site-nav__links a{text-decoration:none;color:var(--ink2);font-size:.93rem}
 .site-nav__links a:hover{color:var(--terra)}
 @media(max-width:800px){.site-nav__links a:not(.site-social-link){display:none}}
-.site-nav__cart{background:var(--ink);border:none;color:var(--paper);padding:10px 20px;border-radius:999px;
+.site-nav__cart{flex-shrink:0;white-space:nowrap;background:var(--ink);border:none;color:var(--paper);padding:10px 20px;border-radius:999px;
   font-size:.9rem;font-weight:500;display:flex;align-items:center;gap:8px}
 .site-nav__cart-count{background:var(--terra);color:#fff;border-radius:999px;min-width:20px;height:20px;
   display:grid;place-items:center;font-size:.75rem;font-weight:600}
@@ -93,6 +93,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 /* ---------- Footer (partials/footer.html) ---------- */
 .site-footer{border-top:1px solid var(--rule);padding:52px 0 40px;color:var(--soft);font-size:.9rem}
 .site-footer__grid{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap;margin-bottom:30px}
+/* Tablets and phones: the logo on its own row, then the link columns lined up in a grid. */
+@media(max-width:900px){.site-footer__grid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:30px 24px}.site-footer__about{grid-column:1/-1;max-width:46ch}}
+@media(max-width:600px){.site-footer__grid{grid-template-columns:1fr 1fr;justify-content:stretch;gap:28px 20px}}
 .site-footer__about{max-width:28ch}
 .site-footer__logo{height:30px;width:auto;margin-bottom:16px}
 .site-footer__tagline,.site-footer__copy{margin:0}
@@ -186,7 +189,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .cart-item .brand-word{font-size:.95rem}
 
 /* ---------- Toast (partials/drawers.html) ---------- */
-.site-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,260%);opacity:0;background:var(--ink);
-  color:var(--paper);padding:14px 26px;border-radius:999px;z-index:200;font-size:.93rem;
+.site-toast{position:fixed;left:16px;right:16px;bottom:28px;margin:0 auto;width:fit-content;max-width:520px;transform:translateY(260%);opacity:0;background:var(--ink);
+  color:var(--paper);padding:13px 24px;border-radius:22px;z-index:200;font-size:.93rem;line-height:1.4;text-align:center;
   transition:transform .3s cubic-bezier(.3,.9,.4,1)}
-.site-toast.is-visible{transform:translate(-50%,0);opacity:1}
+.site-toast.is-visible{transform:translateY(0);opacity:1}

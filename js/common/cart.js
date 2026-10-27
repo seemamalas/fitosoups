@@ -43,6 +43,10 @@ function updateCart(force){
     const r=lastReservation();
     // Paid: just a thank you. Payment page already opened: a thank you, with a small link in case it didn't go through.
     // Otherwise the full Pay panel.
+    if(r.outside){
+      body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">You're on the list.</p><p>${escHtml(r.summary)}</p><p>We only deliver in Dubai for now. We'll tell you as soon as FITO reaches you.</p><p>Questions? <a href="https://wa.me/971556058152">Message us on WhatsApp</a>.</p></div>`;
+      foot.hidden=true; return;
+    }
     const payPart=r.paid?`<p class="cart-reserved__paid">Paid. Thank you, there's nothing more to do.</p>`
       :r.pay&&r.payOpened?`<p>Thank you! Once your payment has gone through, there's nothing more to do.</p><p class="site-smallprint">Payment didn't go through? <a class="js-paylink" href="${escHtml(r.pay.link)}" target="_blank" rel="noopener">Pay ${escHtml(r.pay.amount)} here</a>.</p>`
       :r.pay?`${payPanel(r.pay)}<p>Already paid? Thank you, there's nothing more to do.</p>`
@@ -68,7 +72,7 @@ function updateCart(force){
       <div class="cart-item__price">${money(box.tops[t.id]*t.price)}</div>
     </div>`).join('')
     +(box.pct?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Subscriber saving</div><div class="cart-item__meta">${Math.round(box.pct*100)}% off ${box.packs} packs</div></div><div class="cart-item__price cart-item__price--saving">−${money(box.packs*PRICE*box.pct)}</div></div>`:'')
-    +(box.mode==='sub'&&planOf(box).boxes?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Prepay ${planOf(box).boxes} deliveries</div><div class="cart-item__meta">${money(box.total)} a box, extra ${Math.round(planOf(box).extra*100)}% off</div></div><div class="cart-item__price">${money(box.prepaid)}</div></div>`:'')
+    +(box.mode==='sub'&&planOf(box).boxes?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Prepay ${planOf(box).boxes} boxes</div><div class="cart-item__meta">${money(box.total)} a box, extra ${Math.round(planOf(box).extra*100)}% off</div></div><div class="cart-item__price">${money(box.prepaid)}</div></div>`:'')
     +`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title">Delivery</div><div class="cart-item__meta">${box.mode==='sub'?'Free for early subscribers':'Anywhere in Dubai'}</div></div><div class="cart-item__price">${box.del?money(box.del):'Free'}</div></div>`
     +`<button class="site-btn site-btn--line cart-clear" id="clearBox">Empty the box</button>`;
   const pp=planOf(box), pre=box.mode==='sub'&&pp.boxes>0;
@@ -79,7 +83,7 @@ function updateCart(force){
   if(box.reserved) document.getElementById('dTerms').textContent='Booked. To change anything, message us on WhatsApp.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
   co.disabled=short;
-  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to book`:box.chosen===false?'Choose Soupscription or One-time box':box.reserved?'Update my booking':'Book and pay';
+  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to book`:box.chosen===false?'Choose Soupscription or One\u2011time box':box.reserved?'Update my booking':'Book and pay';
   if(short) document.getElementById('dTerms').textContent='Four packs minimum, then as many as you like.';
   body.querySelector('#clearBox').onclick=()=>{
     box=null;

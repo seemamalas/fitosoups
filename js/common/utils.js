@@ -9,7 +9,8 @@ function shade(hex,amt){
   return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
 }
 
-const money=n=>'AED '+n.toLocaleString('en-AE',{maximumFractionDigits:0});
+/* Amounts exactly as charged: whole dirhams when round, otherwise with fils (AED 165.60), so the site always matches the payment page. */
+const money=n=>{const r=Math.round(n*100)/100;return 'AED '+r.toLocaleString('en-AE',{minimumFractionDigits:r%1?2:0,maximumFractionDigits:2});};
 const fmt=d=>d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
 /* Full date for sentences, e.g. "Saturday 7 November 2026". */
 const fmtLong=d=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});

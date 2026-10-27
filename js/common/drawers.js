@@ -5,4 +5,4 @@ function closeDrawer(){drawer.classList.remove('is-open');scrim.classList.remove
 document.getElementById('cartOpen').onclick=()=>{updateCart(true);openDrawer();};
 document.getElementById('dclose').onclick=closeDrawer;
 scrim.onclick=function(){closeDrawer();closeLegal();};
-addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();if(typeof closeLegal==='function')closeLegal();}});
