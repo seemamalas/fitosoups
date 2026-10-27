@@ -211,7 +211,6 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   .how-to__list li+li{border-left:none;border-top:1px solid var(--rule)}
   .how-to__list span{max-width:none}
 }
-}
 
 /* ---------- Savings track (subscriber discount tiers) ---------- */
 .savings-track__rail{position:relative;height:58px;margin:6px 8px 0}
