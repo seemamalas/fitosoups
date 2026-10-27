@@ -39,9 +39,11 @@ function bowl(c,s){
     </g>
   </svg>`;
 }
+/* Croutons are drawn as sourdough cubes: a pale crumb inside a golden crust. */
+const CRUMB='#E9CD98', CRUST='#8A5426';
 function miniBag(w){
-  const c='#D9B36A';
-  const sq=(x,y,s,f,r)=>`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="3" fill="${f}" stroke="${INK}" stroke-width="1.6" transform="rotate(${r} ${x+s/2} ${y+s/2})"/>`;
+  const c=CRUMB;
+  const sq=(x,y,s,f,r)=>`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="3" fill="${f}" stroke="${CRUST}" stroke-width="2.6" transform="rotate(${r} ${x+s/2} ${y+s/2})"/>`;
   return `<svg viewBox="0 0 90 108" width="${w}" height="${w*108/90}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M14 16 H76 L82 101 A4 4 0 0 1 78 105 H12 A4 4 0 0 1 8 101 Z" fill="#FBF8F1" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
     <path d="M14 16 L19 5 H71 L76 16 Z" fill="${shade(c,26)}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
@@ -52,13 +54,13 @@ function miniBag(w){
   </svg>`;
 }
 function croutonArt(s){
-  const c='#D9B36A';
+  const c=CRUMB;
   return `<svg viewBox="0 0 120 110" width="${s}" height="${s*0.92}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g stroke="${INK}" stroke-width="1.8" stroke-linejoin="round">
+    <g stroke="${CRUST}" stroke-width="3.2" stroke-linejoin="round">
       <rect x="18" y="52" width="30" height="30" rx="5" fill="${c}" transform="rotate(-12 33 67)"/>
-      <rect x="50" y="44" width="30" height="30" rx="5" fill="${shade(c,18)}" transform="rotate(9 65 59)"/>
-      <rect x="72" y="62" width="28" height="28" rx="5" fill="${shade(c,-16)}" transform="rotate(-6 86 76)"/>
-      <rect x="40" y="70" width="26" height="26" rx="5" fill="${shade(c,8)}" transform="rotate(16 53 83)"/>
+      <rect x="50" y="44" width="30" height="30" rx="5" fill="${shade(c,12)}" transform="rotate(9 65 59)"/>
+      <rect x="72" y="62" width="28" height="28" rx="5" fill="${shade(c,-14)}" transform="rotate(-6 86 76)"/>
+      <rect x="40" y="70" width="26" height="26" rx="5" fill="${shade(c,6)}" transform="rotate(16 53 83)"/>
     </g>
   </svg>`;
 }

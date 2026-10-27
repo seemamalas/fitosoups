@@ -168,7 +168,7 @@ function renderBox(){
       <div class="box-art__count"><b>${n}</b> pack${n>1?'s':''}</div></div>`;
   }).join('');
   const tBefore=prevTops||0;
-  const topRow=tcount?`<div class="box-art__row box-art__row--toppings"><div class="box-art__main"><div class="box-art__name">Croutons</div><div class="box-art__packs">${Array.from({length:tcount},(_,i)=>`<span class="box-art__bag${i>=tBefore?' is-new':''}">${miniBag(22)}</span>`).join('')}</div></div><div class="box-art__count"><b>${tcount}</b> bag${tcount>1?'s':''}</div></div>`:'';
+  const topRow=tcount?`<div class="box-art__row box-art__row--toppings"><div class="box-art__main"><div class="box-art__name">Crunch</div><div class="box-art__packs">${Array.from({length:tcount},(_,i)=>`<span class="box-art__bag${i>=tBefore?' is-new':''}">${miniBag(22)}</span>`).join('')}</div></div><div class="box-art__count"><b>${tcount}</b> bag${tcount>1?'s':''}</div></div>`:'';
   // empty slots still to fill: up to the minimum, then up to the next subscriber saving
   const tiersUp=[...TIERS].sort((a,b)=>a.min-b.min);
   const nextT=tiersUp.find(t=>t.min>total);
@@ -210,7 +210,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <div class="box-picker-row__thumb">${cube(f.c,64)}</div>
     <div>
       <div class="box-picker-row__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
-      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack · ${CUBES}&nbsp;cubes · ${SERV}&nbsp;bowls</div>
+      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack<span class="pm-sep"> · </span><br class="pm-br">${CUBES}&nbsp;cubes · ${SERV}&nbsp;bowls</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${f.ing}<br><em>${f.diet.join(' · ')}${f.note?' · '+f.note:''}</em></p></details>
     </div>
     <div class="qty-stepper">
@@ -233,14 +233,14 @@ document.getElementById('toppings').innerHTML=`<h3 class="box-addons__title">Add
   <div class="box-picker-row box-picker-row--addon">
     <div class="box-picker-row__thumb">${croutonArt(64)}</div>
     <div>
-      <div class="box-picker-row__name"><span class="brand-word">${t.name}</span></div>
-      <div class="box-picker-row__meta">${money(t.price)} a bag</div>
+      <div class="box-picker-row__name"><span class="brand-word">${t.label||t.name}</span></div>
+      ${t.desc?`<div class="box-picker-row__desc">${t.desc}</div>`:''}<div class="box-picker-row__meta">${money(t.price).replace(' ','&nbsp;')} a&nbsp;bag</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${t.note}<br><em>${t.allerg}</em></p></details>
     </div>
     <div class="qty-stepper">
-      <button data-tm="${t.id}" aria-label="One less ${t.name}">−</button>
+      <button data-tm="${t.id}" aria-label="One less ${t.label||t.name}">−</button>
       <span class="qty-stepper__count" id="t-${t.id}">0</span>
-      <button data-tp="${t.id}" aria-label="One more ${t.name}">+</button>
+      <button data-tp="${t.id}" aria-label="One more ${t.label||t.name}">+</button>
     </div>
   </div>`).join('');
 
@@ -302,7 +302,7 @@ function render(){
   if(chosen.length||tchosen.length){
     ml.hidden=false;
     ml.innerHTML=chosen.map(f=>`<li><span class="box-summary__mix-dot" style="background:${f.c}"></span>${f.name}<span class="box-summary__mix-count">${qty[f.id]}</span></li>`).join('')
-      +tchosen.map(t=>`<li><span class="box-summary__mix-dot" style="background:#D9B36A"></span>${t.name}<span class="box-summary__mix-count">${tops[t.id]}</span></li>`).join('');
+      +tchosen.map(t=>`<li><span class="box-summary__mix-dot" style="background:var(--crouton)"></span>${t.label||t.name}<span class="box-summary__mix-count">${tops[t.id]}</span></li>`).join('');
   } else ml.hidden=true;
   document.getElementById('sSub').textContent=money(sub);
   document.getElementById('sSaveRow').hidden=pct===0;

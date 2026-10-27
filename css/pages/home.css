@@ -18,7 +18,7 @@
 .home-hero__ctas{display:flex;gap:12px;flex-wrap:wrap}
 .home-hero__shot{margin:0}
 .home-hero__shot img{width:100%;height:auto;display:block;max-width:560px;margin:0 auto;background:transparent}
-.home-hero__eyebrow{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);font-weight:600;margin:0 0 14px}
+.home-hero__eyebrow{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);font-weight:600;margin:0 0 14px}
 
 /* ---------- Pack and box explainer, right under "Build your box." ----------
    Two lines that share one grid, so the two drawings line up:
@@ -120,16 +120,16 @@
 .cal__day.is-off{color:#CFC2AC}
 button.cal__day{border:1.5px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer;font-family:inherit;padding:0;font-weight:500}
 @media (hover:hover) and (pointer:fine){button.cal__day:hover:not(:disabled){border-color:var(--ink)}}
-button.cal__day.is-selected{background:#DB7814;border-color:#DB7814;color:#fff;font-weight:600}
+button.cal__day.is-selected{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
 button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--soft);text-decoration:line-through;cursor:not-allowed}
 .box-schedule__day{font-family:var(--disp);font-weight:600;font-size:1.15rem;margin:0 0 12px;color:var(--ink)}
 .cal-times{display:flex;flex-direction:column;gap:8px;max-width:300px}
 .cal-time{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--rule);background:#fff;
   border-radius:999px;padding:11px 18px;font:inherit;font-size:.95rem;color:var(--ink);cursor:pointer;text-align:left}
 @media (hover:hover) and (pointer:fine){.cal-time:hover:not(:disabled){border-color:var(--ink)}}
-.cal-time small{font-size:.75rem;font-weight:600;color:var(--terra)}
+.cal-time small{font-size:.75rem;font-weight:600;color:var(--ink2)}
 .cal-time.is-selected{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.cal-time.is-selected small{color:#F2C9A8}
+.cal-time.is-selected small{color:rgba(255,251,247,.72)}
 .cal-time:disabled{background:transparent;border-style:dashed;color:var(--soft);cursor:not-allowed}
 .cal-time:disabled small{color:var(--soft)}
 .cal-checking{margin:0 0 4px;font-size:.84rem;color:var(--ink2);animation:cal-pulse 1.2s ease-in-out infinite alternate}
@@ -158,7 +158,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   border:1.5px solid var(--tint2);background:#fff;box-sizing:border-box}
 .box-builder__toggle button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 .box-builder__toggle button[aria-pressed="true"] span{color:rgba(255,251,247,.72)}
-.box-builder__toggle button[aria-pressed="true"]::after{border:5px solid #DB7814;background:var(--paper)}
+.box-builder__toggle button[aria-pressed="true"]::after{border:5px solid var(--paper);background:var(--ink)}
 @media (hover:hover) and (pointer:fine){.box-builder__toggle button[aria-pressed="false"]:hover{border-color:var(--ink)}}
 @media(max-width:420px){.box-builder__toggle button{padding:14px 14px}.box-builder__toggle button b{font-size:1.1rem}}
 .box-builder__toggle-note{font-size:.88rem;color:var(--soft);margin-bottom:24px}
@@ -169,14 +169,14 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:14px;padding:10px 16px;font-family:inherit;min-width:170px}
 .box-builder__plan button b{font-weight:600;font-size:.95rem}
 .box-builder__plan button span{font-size:.78rem;color:var(--soft)}
-.box-builder__plan button[aria-pressed="true"]{border-color:#DB7814;box-shadow:inset 0 0 0 1px #DB7814;background:#FFF6EC}
-.box-builder__plan button[aria-pressed="true"] span{color:#B35E0E}
+.box-builder__plan button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--paper)}
+.box-builder__plan button[aria-pressed="true"] span{color:var(--ink2)}
 @media (hover:hover) and (pointer:fine){.box-builder__plan button:hover{border-color:var(--ink)}}
 .box-builder__plan button{flex:1 1 0;min-width:0}
 /* Prepay sits first, with its saving in green so it catches the eye. */
 .box-builder__plan button.is-deal[aria-pressed="false"] span{color:var(--sage);font-weight:600}
 /* Reserve pressed before choosing: the two big buttons give a little shake. */
-.box-builder__toggle.is-nudge button{animation:fitoNudge .5s ease-in-out 2;border-color:#DB7814}
+.box-builder__toggle.is-nudge button{animation:fitoNudge .5s ease-in-out 2;border-color:var(--terra)}
 @keyframes fitoNudge{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @media (prefers-reduced-motion:reduce){.box-builder__toggle.is-nudge button{animation:none}}
 .box-summary__prepay{border-top:1px dashed var(--rule);margin-top:6px}
@@ -199,8 +199,19 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .home-section.home-section--compact{padding:44px 0}
 .how-to{text-align:center;max-width:780px;margin:0 auto}
 .how-to h2{font-size:clamp(1.4rem,3vw,1.8rem);margin-bottom:10px}
-.how-to__steps{color:var(--ink2);font-size:1rem;margin:0;text-wrap:balance}
-.how-to__steps i{font-style:normal;color:var(--terra);margin:0 6px}
+.how-to__list{list-style:none;margin:26px auto 30px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);max-width:720px}
+.how-to__list li{display:flex;flex-direction:column;align-items:center;gap:7px;padding:4px 18px}
+.how-to__list li+li{border-left:1px solid var(--rule)}
+.how-to__list b{font-family:var(--ui);font-weight:600;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);line-height:1}
+.how-to__list span{font-size:.95rem;color:var(--ink2);line-height:1.5;max-width:24ch;text-wrap:balance}
+/* Phones: one step per row, thin lines between, nothing wraps awkwardly */
+@media(max-width:600px){
+  .how-to__list{grid-template-columns:1fr;max-width:300px;margin:18px auto 24px}
+  .how-to__list li{padding:13px 0;gap:6px}
+  .how-to__list li+li{border-left:none;border-top:1px solid var(--rule)}
+  .how-to__list span{max-width:none}
+}
+}
 
 /* ---------- Savings track (subscriber discount tiers) ---------- */
 .savings-track__rail{position:relative;height:58px;margin:6px 8px 0}
@@ -217,7 +228,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 
 /* ---------- Flavour picker rows ---------- */
 .ingredients-toggle{margin-top:6px}
-.ingredients-toggle summary{font-size:.78rem;color:var(--terra);cursor:pointer;list-style:none;
+.ingredients-toggle summary{font-size:.78rem;color:var(--ink2);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule);cursor:pointer;list-style:none;
   display:inline-flex;align-items:center;gap:5px}
 .ingredients-toggle summary::-webkit-details-marker{display:none}
 .ingredients-toggle summary::after{content:"+";font-size:.95rem;line-height:1}
@@ -228,6 +239,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-picker-row__soon-tag{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);
   border:1px solid var(--rule);border-radius:999px;padding:6px 12px;white-space:nowrap}
 .box-picker-row.box-picker-row--addon{background:none;border:1.5px dashed var(--rule)}
+.box-picker-row--addon .qty-stepper button{background:var(--surface)}
 .box-picker-row__optional{font-family:var(--ui);font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--soft);vertical-align:middle;margin-left:6px}
 .box-picker-row{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
@@ -235,7 +247,10 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-picker-row__thumb{width:64px;flex:0 0 64px}
 .box-picker-row__name{font-family:var(--script);font-weight:600;font-size:1.85rem;line-height:1.15;
   letter-spacing:.008em;color:var(--terra)}
-.box-picker-row__meta{font-size:.84rem;color:var(--soft)}
+.box-picker-row__meta{font-size:.84rem;color:var(--soft);line-height:1.45}
+.pm-br{display:none}
+@media(max-width:480px){.pm-sep{display:none}.pm-br{display:inline}}
+.box-picker-row__desc{font-size:.84rem;line-height:1.35;color:var(--ink2);margin:3px 0 2px}
 .qty-stepper{display:flex;align-items:center;gap:5px}
 .qty-stepper button{width:36px;height:36px;border-radius:50%;border:none;background:var(--paper);
   color:var(--ink);font-size:1.15rem;display:grid;place-items:center;line-height:1;
@@ -255,9 +270,9 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .early-sub-flag{background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:20px}
 .early-sub-flag[hidden]{display:none}
 .early-sub-flag strong{display:block;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;
-  color:var(--terra);margin-bottom:5px}
-.early-sub-flag span{font-size:.85rem;line-height:1.5;color:var(--ink2)}
-.early-sub-flag a{display:inline-block;margin-top:9px;color:var(--terra);font-size:.8rem;
+  color:var(--ink);margin-bottom:5px}
+.early-sub-flag span{display:block;font-size:.85rem;line-height:1.5;color:var(--ink2)}
+.early-sub-flag a{display:inline-block;margin-top:9px;color:var(--ink);font-size:.8rem;
   text-decoration:underline;text-underline-offset:3px}
 .early-sub-flag a::after{content:" \2192"}
 .early-sub-flag a:hover{color:var(--ink)}
@@ -369,7 +384,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   border-radius:14px;background:var(--tint);overflow:hidden;margin:22px auto 0;max-width:620px}
 .home-stats__item{padding:14px 12px;text-align:center}
 .home-stats__item+.home-stats__item{border-left:1px solid var(--rule)}
-.home-stats__item b{display:block;font-family:var(--disp);font-size:1.35rem;line-height:1;color:var(--terra);font-weight:600}
+.home-stats__item b{display:block;font-family:var(--disp);font-size:1.35rem;line-height:1;color:var(--ink);font-weight:600}
 .home-stats__item span{display:block;margin-top:6px;font-size:.78rem;color:var(--ink2);line-height:1.4}
 @media(max-width:480px){.home-stats__item{padding:12px 6px}.home-stats__item b{font-size:1.15rem}.home-stats__item span{font-size:.72rem}}
 

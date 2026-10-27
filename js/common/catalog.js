@@ -25,7 +25,7 @@ const delFor=m=>m==='sub'?0:DELIVERY;
 const FLAVOURS=[
   {id:'caramel',name:'Caramel',c:'#DB7814',sub:'Sweet potato & butternut squash',tag:'Best seller',avail:true,
    desc:'Velvety and naturally sweet, warmed through with cinnamon and nutmeg.',
-   ing:'Butternut squash, water, sweet potato, red onion, olive oil, honey, salt, cinnamon, nutmeg, black pepper.',
+   ing:'Butternut squash, water, sweet potato, red onion, honey, olive oil, salt, cinnamon, nutmeg, black pepper.',
    diet:['Vegetarian','No gluten'],note:'Contains honey',ar:''},
   {id:'green',name:'Green Goddess',c:'#819C35',sub:'Pea, broccoli & basil',tag:'Fan favourite',avail:true,
    desc:'Bright and green: sweet peas, broccoli and fresh basil. Best with a squeeze of lemon.',
@@ -37,8 +37,9 @@ const FLAVOURS=[
    diet:['Vegan','No gluten'],note:'',ar:'عدس'}
 ];
 const TOPPINGS=[
-  {id:'croutons',name:'Croutons',price:15,sub:'Homemade, per bag',
-   note:'Sourdough, olive oil, salt, black pepper, parmesan',allerg:'Contains wheat and dairy'}
+  // name stays 'Croutons': it is the column in the sheet. label is what customers see.
+  {id:'croutons',name:'Croutons',label:'Crunch',desc:'Sourdough parmesan croutons',price:15,sub:'Homemade, per bag',
+   note:'Sourdough bread (wheat flour, water, salt), olive oil, parmesan cheese (milk), salt, black pepper',allerg:'Contains wheat (gluten) and milk'}
 ];
 // Subscriber savings: the bigger the box, the bigger the discount.
 const TIERS=[{min:16,pct:.18},{min:10,pct:.15},{min:6,pct:.12},{min:4,pct:.08}];

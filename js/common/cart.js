@@ -64,7 +64,7 @@ function updateCart(force){
     +TOPPINGS.filter(t=>(box.tops||{})[t.id]>0).map(t=>`
     <div class="cart-item">
       <div class="cart-item__thumb">${croutonArt(46)}</div>
-      <div><div class="cart-item__name"><span class="brand-word">${t.name}</span></div><div class="cart-item__meta">${box.tops[t.id]} bag${box.tops[t.id]>1?'s':''}</div></div>
+      <div><div class="cart-item__name"><span class="brand-word">${t.label||t.name}</span></div><div class="cart-item__meta">${box.tops[t.id]} bag${box.tops[t.id]>1?'s':''} of croutons</div></div>
       <div class="cart-item__price">${money(box.tops[t.id]*t.price)}</div>
     </div>`).join('')
     +(box.pct?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Subscriber saving</div><div class="cart-item__meta">${Math.round(box.pct*100)}% off ${box.packs} packs</div></div><div class="cart-item__price cart-item__price--saving">−${money(box.packs*PRICE*box.pct)}</div></div>`:'')

@@ -13,10 +13,10 @@
   /* Paper at 99% for fixed bars and panels: iOS 26 Safari can leave part of the screen blank
      around a fully opaque fixed element. 99% looks identical and avoids it. */
   --paper-fixed:rgba(255,251,247,.99);
-  --ink:#3A2E22; --ink2:#6A5A48; --soft:#9B8C77;
+  --ink:#3A2E22; --ink2:#6A5A48; --soft:#80705D;
   --terra:#C1613C; --sage:#6B7A3A; --gold:#E8C766;
   --rule:#DFD3BE;
-  --logo-brown:#493627; --crouton:#B08A3E;
+  --logo-brown:#493627; --crouton:#A86B32; --crumb:#E9CD98; --crust:#8A5426;
   --disp:'Fraunces',Georgia,serif;
   --script:'Parisienne',cursive;
   --brand:'Funflare','Fraunces',Georgia,serif;
@@ -122,7 +122,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .cart-item__thumb{width:46px;flex:0 0 46px}
 .cart-item__label{padding-left:2px}
 .cart-item__name{font-family:var(--script);font-weight:600;font-size:1.55rem;line-height:1.15;
-  letter-spacing:.008em;color:var(--terra)}
+  letter-spacing:.008em;color:var(--ink)}
 .cart-item__meta{font-size:.82rem;color:var(--soft)}
 .cart-item__price{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
 .cart-item__label-title{font-weight:600}
@@ -157,7 +157,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .reserve-form__wait[hidden]{display:none}
 .reserve-form .site-smallprint{margin:0}
 .reserve-done{padding:48px 8px;text-align:center}
-.reserve-done__title{font-family:var(--disp);font-size:1.5rem;font-weight:600;color:var(--terra);margin:0 0 10px}
+.reserve-done__title{font-family:var(--disp);font-size:1.5rem;font-weight:600;color:var(--ink);margin:0 0 10px}
 .reserve-done p{color:var(--ink2)}
 .reserve-done{padding-top:32px}
 .reserve-pay{margin:18px 0 14px;padding:18px 16px;border:1.5px solid var(--rule);border-radius:14px;background:#fff;display:grid;gap:6px;text-align:center}
@@ -168,7 +168,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .reserve-done .site-smallprint{font-size:.82rem}
 .cart-reserved .reserve-pay{text-align:left}
 .reserve-full{padding:40px 8px;text-align:center}
-.reserve-full__title{font-family:var(--disp);font-size:1.4rem;font-weight:600;color:var(--terra);margin:0 0 10px}
+.reserve-full__title{font-family:var(--disp);font-size:1.4rem;font-weight:600;color:var(--ink);margin:0 0 10px}
 .reserve-full p{color:var(--ink2)}
 .reserve-full__pick{width:100%;margin-top:14px}
 .reserve-full__mine{margin-top:16px;background:none;border:none;color:var(--ink2);text-decoration:underline;font:inherit;font-size:.86rem;cursor:pointer}
