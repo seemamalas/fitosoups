@@ -15,13 +15,29 @@ function lastReservation(){
 function updateReservation(patch){
   try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); if(!r) return; Object.assign(r,patch); localStorage.setItem('fito_reserved',JSON.stringify(r));}catch(_){}
 }
+/* Personal payment links sent on WhatsApp look like fitosoups.com/?pay=FITO-XXXX&a=16560&e=name@mail.com
+   (a = the amount in fils). The page notes whose payment it is on this phone, then goes straight on to the
+   Stripe page with the amount and email filled in. When Stripe sends them back (?paid=...), the sheet is told
+   to tick that booking_ref as paid, the same way as bookings made on the site. */
+(()=>{try{const q=new URLSearchParams(location.search); if(!q.has('pay')) return;
+  const ref=(q.get('pay')||'').trim().toUpperCase(), fils=parseInt(q.get('a')||'',10), email=(q.get('e')||'').trim();
+  if(!/^FITO-[A-Z0-9]{4,12}$/.test(ref)||!(fils>=100&&fils<=1000000)) return;
+  try{localStorage.setItem('fito_paylink',JSON.stringify({ref,at:Date.now()}));}catch(_){}
+  const p=new URLSearchParams(); if(/^[^@\s]+@[^@\s]+$/.test(email)) p.set('prefilled_email',email);
+  p.set('client_reference_id',ref); p.set('prefilled_amount',String(fils));
+  location.replace(PAY_URL+'?'+p.toString());
+}catch(_){}})();
 /* Back from Stripe: the payment link sends paying customers to fitosoups.com/?paid=... (set by The CO Kitchens),
    so the booking shows as paid here and the Pay button doesn't come back. */
 (()=>{try{const q=new URLSearchParams(location.search); if(!q.has('paid')) return;
   updateReservation({paid:true,paidAt:Date.now()});
   // Tell the sheet, so the paid box ticks itself. A read-only request: a sheet script without the
   // 'paid' step just ignores it, so nothing can be overwritten.
-  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'), ref=r&&r.pay&&r.pay.ref;
+  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); let ref=r&&r.pay&&r.pay.ref;
+    // A personal link opened on this phone in the last 3 days is the payment that just went through.
+    const pl=JSON.parse(localStorage.getItem('fito_paylink')||'null');
+    if(pl&&pl.ref&&Date.now()-pl.at<3*864e5) ref=pl.ref;
+    localStorage.removeItem('fito_paylink');
     if(ref&&typeof askSheet==='function'&&ON_LIVE_SITE) askSheet({action:'paid',ref,session:(q.get('paid')||'').slice(0,90)}).catch(()=>{});}catch(_){}
   history.replaceState(null,'',location.pathname+location.hash);
   window.addEventListener('load',()=>setTimeout(()=>toast('Thank you, your payment went through. See you on delivery day!'),500));

@@ -167,7 +167,7 @@ function showReserveForm(skipCheck){
       : `<p>Your ${sub?'soupscription':'box'} for ${when} is saved. ${opened?'Your secure payment page has opened in a new tab.':'Pay now to confirm it.'}</p>${payPanel(pay)}`}</div>`;
     // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
     const summary=sub?`Soupscription, ${booked.packs} packs${pre?`, ${pp.boxes} boxes prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${booked.packs} packs, ${when}.`;
-    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay,payOpened:!!opened,outside:!inDubai}));}catch(_){}
+    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay,payOpened:!!opened,outside:!inDubai}));localStorage.removeItem('fito_paylink');}catch(_){}
     box=null; saveBox(); document.getElementById('cartN').textContent=0;
     document.dispatchEvent(new CustomEvent('fito:box-emptied'));
     // Save it, trying again a few times if Google is slow or busy.
