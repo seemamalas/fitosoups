@@ -11,14 +11,14 @@ let mode='sub',plan='go',freq=4,firstIdx=0,
     qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0])),
     tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
 
-// The delivery calendar. Every delivery day (rules in catalog.js) from a week after today,
+// The delivery calendar. Every delivery day (rules in catalog.js, closed days left out) from a week after today,
 // never before launch day, for the next four weeks.
 function deliveryDays(){
   const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+LEAD_DAYS);
   if(d<LAUNCH_DAY) d.setTime(LAUNCH_DAY.getTime());
   const end=new Date(d); end.setDate(end.getDate()+BOOK_AHEAD_DAYS-1);
   const out=[];
-  for(const x=new Date(d);x<=end;x.setDate(x.getDate()+1)) if(DAY_SLOTS[x.getDay()]) out.push(new Date(x));
+  for(const x=new Date(d);x<=end;x.setDate(x.getDate()+1)) if(DAY_SLOTS[x.getDay()]&&!isClosedDay(x)) out.push(new Date(x));
   return out;
 }
 const DAYS=deliveryDays();
