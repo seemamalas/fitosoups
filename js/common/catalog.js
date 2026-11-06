@@ -9,11 +9,11 @@ const planOf=b=>PLANS[(b&&b.plan)||'go']||PLANS.go;
 const round2=x=>Math.round(x*100)/100;
 // Deliveries per time slot (3 from 3 November 2026; it was 4). The sheet sends the live number back, so it can change there too.
 const SLOT_LIMIT=3;
-// Delivery days and their time slots (0 = Sunday ... 6 = Saturday), from 3 November 2026:
-// Saturdays in the morning and afternoon (until 15:00); Mondays, Wednesdays and Thursdays the evening only.
-// No deliveries on Sundays, Tuesdays or Fridays. The Google Sheet script has the same rules and refuses anything else.
-const SLOT_TIMES=['8:00 to 10:00','13:00 to 15:00','19:00 to 21:00'];
-const DAY_SLOTS={6:['8:00 to 10:00','13:00 to 15:00'],1:['19:00 to 21:00'],3:['19:00 to 21:00'],4:['19:00 to 21:00']};
+// Delivery days and their time slots (0 = Sunday ... 6 = Saturday), from 7 November 2026:
+// Saturdays and Sundays 10:00 to 13:00; Mondays, Wednesdays and Thursdays the evening only.
+// No deliveries on Tuesdays or Fridays. The Google Sheet script has the same rules and refuses anything else.
+const SLOT_TIMES=['10:00 to 13:00','19:00 to 21:00'];
+const DAY_SLOTS={6:['10:00 to 13:00'],0:['10:00 to 13:00'],1:['19:00 to 21:00'],3:['19:00 to 21:00'],4:['19:00 to 21:00']};
 // Closed: no deliveries 26 December 2026 to 3 January 2027 (Seema's holiday). Those days can't be picked.
 const CLOSED=[[new Date(2026,11,26),new Date(2027,0,3)]];
 const isClosedDay=d=>CLOSED.some(([a,b])=>d>=a&&d<=b);
