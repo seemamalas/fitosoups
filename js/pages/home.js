@@ -229,7 +229,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <span class="box-picker-row__soon-tag">Coming soon</span>
   </div>`).join('');
 
-document.getElementById('toppings').innerHTML=`<h3 class="box-addons__title">Add-ons</h3>`+TOPPINGS.map(t=>`
+document.getElementById('toppings').innerHTML=(TOPPINGS.length?`<h3 class="box-addons__title">Add-ons</h3>`:'')+TOPPINGS.map(t=>`
   <div class="box-picker-row box-picker-row--addon">
     <div class="box-picker-row__thumb">${croutonArt(64)}</div>
     <div>

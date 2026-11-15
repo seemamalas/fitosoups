@@ -14,8 +14,8 @@ const SLOT_LIMIT=3;
 // No deliveries on Tuesdays or Fridays. The Google Sheet script has the same rules and refuses anything else.
 const SLOT_TIMES=['10:00 to 13:00','19:00 to 21:00'];
 const DAY_SLOTS={6:['10:00 to 13:00'],0:['10:00 to 13:00'],1:['19:00 to 21:00'],3:['19:00 to 21:00'],4:['19:00 to 21:00']};
-// Closed: no deliveries 26 December 2026 to 3 January 2027 (Seema's holiday). Those days can't be picked.
-const CLOSED=[[new Date(2026,11,26),new Date(2027,0,3)]];
+// Closed: no deliveries 26 December 2026 to 6 January 2027 (Seema's holiday; Thursday 7 January is the first day back). Those days can't be picked.
+const CLOSED=[[new Date(2026,11,26),new Date(2027,0,6)]];
 const isClosedDay=d=>CLOSED.some(([a,b])=>d>=a&&d<=b);
 const LAUNCH_DAY=new Date(2026,10,7), LEAD_DAYS=7, BOOK_AHEAD_DAYS=28;
 // The days a booking takes a place in its slot: a soupscription comes back every 4 weeks,
@@ -38,11 +38,12 @@ const FLAVOURS=[
    ing:'Water, red onion, red lentils, carrot, rice, olive oil, salt, cumin, white pepper, black pepper.',
    diet:['Vegan','No gluten'],note:'',ar:'عدس'}
 ];
-const TOPPINGS=[
-  // name stays 'Croutons': it is the column in the sheet. label is what customers see.
-  {id:'croutons',name:'Croutons',label:'Crunch',desc:'Sourdough parmesan croutons',price:15,sub:'Homemade, per bag',
-   note:'Sourdough bread (wheat flour, water, salt), olive oil, parmesan cheese (milk), salt, black pepper',allerg:'Contains wheat (gluten) and milk'}
-];
+// Add-ons. Crunch is off the website for now (15 November 2026). To bring it back, move its line
+// from CRUNCH into TOPPINGS: TOPPINGS=[CRUNCH];
+// name stays 'Croutons': it is the column in the sheet. label is what customers see.
+const CRUNCH={id:'croutons',name:'Croutons',label:'Crunch',desc:'Sourdough parmesan croutons',price:15,sub:'Homemade, per bag',
+   note:'Sourdough bread (wheat flour, water, salt), olive oil, parmesan cheese (milk), salt, black pepper',allerg:'Contains wheat (gluten) and milk'};
+const TOPPINGS=[];
 // Subscriber savings: the bigger the box, the bigger the discount.
 const TIERS=[{min:16,pct:.18},{min:10,pct:.15},{min:6,pct:.12},{min:4,pct:.08}];
 const discountFor=n=>{for(const t of TIERS) if(n>=t.min) return t.pct; return 0;};
