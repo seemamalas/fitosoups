@@ -43,8 +43,9 @@ function askSheet(params,ms=12000){
   return within(viaFetch(),ms).catch(err=>{console.warn('FITO: sheet request failed, trying again another way:',err&&err.message);return within(viaScript(),ms);});
 }
 /* How many deliveries each day and slot already has, e.g. {"2026-11-07|8:00 to 10:00": 6}. */
+// Short waits (5 seconds a try): if the sheet is slow, the calendar shows the times rather than keep people waiting.
 function fetchSlotCounts(days){
-  return askSheet({action:'slots',dates:days.join(',')}).then(d=>{ if(!d||!d.counts) throw new Error('no counts'); return d; });
+  return askSheet({action:'slots',dates:days.join(',')},5000).then(d=>{ if(!d||!d.counts) throw new Error('no counts'); return d; });
 }
 
 /* Sends a reservation and finds out what happened: 'booked', 'full' (the slot filled up first),

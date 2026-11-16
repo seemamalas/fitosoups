@@ -96,8 +96,9 @@ function loadSlots(){
   const days=[...new Set(DAYS.flatMap(d=>slotDays('sub',d)).map(isoDay))];
   return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; slotsState='ok'; applySlots(); })
     .catch(err=>{ console.warn('FITO: could not load which times are free:',err&&err.message);
-      if(slotsState==='loading'&&!loadSlots.retried){ loadSlots.retried=true; return loadSlots(); }
-      if(slotsState==='loading'){ slotsState='failed'; applySlots(); } });
+      // Show the times now (the sheet checks again when they reserve), and keep trying once more in the background.
+      if(slotsState==='loading'){ slotsState='failed'; applySlots(); }
+      if(!loadSlots.retried){ loadSlots.retried=true; return loadSlots(); } });
 }
 // Fresh counts whenever someone comes back to the tab (not while the reservation form is open).
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&!drawer.classList.contains('is-open')) loadSlots(); });
