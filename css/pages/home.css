@@ -257,6 +257,8 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   letter-spacing:.008em;color:var(--terra)}
 .box-picker-row__meta{font-size:.84rem;color:var(--soft);line-height:1.45}
 .pm-br{display:none}
+/* 4 cubes = 2 bowls, as a pill in the flavour's colour (19 November 2026). */
+.cubes-pill{display:inline-block;margin-top:5px;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;padding:4px 10px 3px;border-radius:999px}
 @media(max-width:480px){.pm-sep{display:none}.pm-br{display:inline}}
 .box-picker-row__desc{font-size:.84rem;line-height:1.35;color:var(--ink2);margin:3px 0 2px}
 .qty-stepper{display:flex;align-items:center;gap:5px}
