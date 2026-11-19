@@ -74,13 +74,14 @@
 .box-builder__head p{color:var(--ink2);margin-top:14px;font-size:1.04rem}
 
 /* ---------- Flavour cards ---------- */
-.flavours__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.flavours__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
 @media(max-width:860px){.flavours__grid{grid-template-columns:1fr;gap:30px}}
 .flavour-card{background:var(--tint);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
 .flavour-card__body{padding:28px 24px 26px;display:flex;flex-direction:column;flex:1}
 .flavour-card__mascot{display:flex;justify-content:center;margin:-6px 0 10px}
 .flavour-card__mascot img{width:120px;height:120px;display:block}
-.flavour-card__tag{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+/* The tag above each flavour name, as a pill in that flavour's colour (19 November 2026). */
+.flavour-card__tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:5px 11px 4px;border-radius:999px;margin-bottom:10px;align-self:flex-start;width:fit-content}
 .flavour-card__name{font-family:var(--script);font-weight:600;font-size:2.4rem;line-height:1.05;
   letter-spacing:.008em;color:var(--terra);margin-bottom:8px}
 .flavour-card__sub{font-size:.92rem;color:var(--ink2);font-weight:500;margin-bottom:12px}
@@ -193,6 +194,11 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .flavour-card__name .flavour-name-img{height:24px}
 .box-picker-row__name .flavour-name-img{height:19px;margin:4px 0 5px}
 .box-art__name .flavour-name-img{height:14px;margin:3px 0 3px}
+/* Flavours without name artwork yet (POM POM): the same Funflare lettering, as text. */
+.flavour-name-text{font-family:var(--brand);font-weight:400;text-transform:uppercase;letter-spacing:.02em;line-height:1;display:inline-block}
+.flavour-card__name .flavour-name-text{font-size:25px;display:block;line-height:24px}
+.box-picker-row__name .flavour-name-text{font-size:20px;margin:3px 0 4px}
+.box-art__name .flavour-name-text{font-size:16px;margin:2px 0}
 
 /* Empty slots in the box line-up */
 .box-art__pack.box-art__pack--ghost{width:24px;height:24px;border:1.4px dashed rgba(58,46,34,.35);background:transparent}

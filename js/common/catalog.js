@@ -36,7 +36,13 @@ const FLAVOURS=[
   {id:'addas',name:"B'addass",c:'#C0662B',sub:'Red lentil with cumin',tag:'TETA LOVES THIS',avail:true,
    desc:'Red lentils, carrot and cumin, with a little rice for body.',
    ing:'Water, red onion, red lentils, carrot, rice, olive oil, salt, cumin, white pepper, black pepper.',
-   diet:['Vegan','No gluten'],note:'',ar:'عدس'}
+   diet:['Vegan','No gluten'],note:'',ar:'عدس'},
+  // POM POM: coming soon (19 November 2026). First batch cooked Tuesday 24 November, 20 packs, 1 per box.
+  // To open orders: set avail:true. The sheet then needs a 'POM POM' column and the Code.gs update first.
+  {id:'pompom',name:'POM POM',c:'#D2352B',sub:'Roasted tomato & red pepper',tag:'Coming soon',avail:false,soon:'first batch late November',
+   desc:'Oven-roasted tomatoes and red pepper with a touch of smoked paprika, blended silky with white beans instead of cream.',
+   ing:'Tomatoes, white onion, red pepper, white beans, carrot, water, olive oil, garlic, basil, tomato paste, salt, smoked paprika, black pepper.',
+   diet:['Vegan','No gluten'],note:'',ar:''}
 ];
 // Add-ons. Crunch is off the website for now (15 November 2026). To bring it back, move its line
 // from CRUNCH into TOPPINGS: TOPPINGS=[CRUNCH];

@@ -95,7 +95,7 @@ function boxFields(b){
   // The sheet counts anything starting "Soupscription" as a subscriber (slots, First 50), so keep that word first.
   const pp=planOf(b), pre=b.mode==='sub'&&pp.boxes>0;
   const f={reservation:b.mode!=='sub'?'One-time box':pre?`Soupscription, ${pp.boxes} boxes prepaid`:'Soupscription, every 4 weeks',packs:b.packs};
-  FLAVOURS.forEach(x=>{f[x.name]=b.items[x.id]||0;});
+  FLAVOURS.filter(x=>x.avail).forEach(x=>{f[x.name]=b.items[x.id]||0;});
   TOPPINGS.forEach(t=>{f[t.name]=(b.tops||{})[t.id]||0;});
   f.price_per_box_aed=Math.round(b.total*100)/100;
   if(b.mode==='sub'){ f.plan=pre?`Prepay ${pp.boxes} boxes (extra ${Math.round(pp.extra*100)}% off)`:'Pay as you go (minimum 2 boxes)';

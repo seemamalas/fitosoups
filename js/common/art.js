@@ -5,14 +5,15 @@
 const CUBEIMG={
   '#DB7814':'assets/images/cubes/caramel.webp',
   '#819C35':'assets/images/cubes/green-goddess.webp',
-  '#C0662B':'assets/images/cubes/baddass.webp'
+  '#C0662B':'assets/images/cubes/baddass.webp',
+  '#D2352B':'assets/images/cubes/pom-pom.webp'
 };
 const NAMEIMG={
   addas:'assets/images/names/baddass.webp',
   green:'assets/images/names/green-goddess.webp',
   caramel:'assets/images/names/caramel.webp'
 };
-const nameArt=f=>NAMEIMG[f.id]?`<img class="flavour-name-img" src="${NAMEIMG[f.id]}" alt="${f.name}">`:f.name;
+const nameArt=f=>NAMEIMG[f.id]?`<img class="flavour-name-img" src="${NAMEIMG[f.id]}" alt="${f.name}">`:`<span class="flavour-name-text" style="color:${f.c}">${f.name}</span>`;
 
 function cube(c,s){
   if(CUBEIMG[c]) return `<svg viewBox="0 0 120 120" width="${s}" height="${s}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><image href="${CUBEIMG[c]}" x="0" y="0" width="120" height="120" preserveAspectRatio="xMidYMid meet"/></svg>`;

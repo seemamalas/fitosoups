@@ -140,7 +140,7 @@ document.getElementById('flavCards').innerHTML=FLAVOURS.map(f=>`
   <article class="flavour-card">
     <div class="flavour-card__body">
       <div class="flavour-card__mascot">${CUBEIMG[f.c]?`<img src="${CUBEIMG[f.c]}" alt="${f.name} soup cube character" width="120" height="120">`:''}</div>
-      <div class="flavour-card__tag">${f.tag}</div>
+      <div class="flavour-card__tag" style="color:${shade(f.c,-34)};background:${f.c}26">${f.tag}</div>
       <div class="flavour-card__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
       <div class="flavour-card__sub">${f.sub}${f.ar?` <span class="flavour-card__arabic" lang="ar">· ${f.ar}</span>`:''}</div>
       <p>${f.desc}</p>
@@ -224,7 +224,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <div class="box-picker-row__thumb">${cube(f.c,64)}</div>
     <div>
       <div class="box-picker-row__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
-      <div class="box-picker-row__meta">${f.sub} · arriving for Ramadan</div>
+      <div class="box-picker-row__meta">${f.sub} · ${f.soon||'coming soon'}</div>
       ${f.ing?`<details class="ingredients-toggle"><summary>Ingredients</summary><p>${f.ing}<br><em>${f.diet.join(' · ')}</em></p></details>`:''}
     </div>
     <span class="box-picker-row__soon-tag">Coming soon</span>
