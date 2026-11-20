@@ -29,16 +29,33 @@ function updateReservation(patch){
 }catch(_){}})();
 /* Back from Stripe: the payment link sends paying customers to fitosoups.com/?paid=... (set by The CO Kitchens),
    so the booking shows as paid here and the Pay button doesn't come back. */
-(()=>{try{const q=new URLSearchParams(location.search); if(!q.has('paid')) return;
+/* Update 50: tells the sheet a payment went through. Saved on this phone first, then sent, and tried
+   again (after 3, 10 and 30 seconds, then on the next visits for 7 days) until the sheet answers. */
+function fitoReportPaid(report){
+  const KEY='fito_paid_report';
+  try{ if(report) localStorage.setItem(KEY,JSON.stringify(report)); else report=JSON.parse(localStorage.getItem(KEY)||'null'); }catch(_){}
+  if(!report||!report.at||Date.now()-report.at>7*864e5){ try{localStorage.removeItem(KEY);}catch(_){} return; }
+  if(typeof askSheet!=='function'||typeof ON_LIVE_SITE==='undefined'||!ON_LIVE_SITE) return;
+  const waits=[3000,10000,30000];
+  const send=n=>askSheet({action:'paid',ref:report.ref||'',session:report.session||''})
+    .then(()=>{ try{localStorage.removeItem(KEY);}catch(_){} })
+    .catch(()=>{ if(n<waits.length) setTimeout(()=>send(n+1),waits[n]); });
+  send(0);
+}
+(()=>{try{const q=new URLSearchParams(location.search); if(!q.has('paid')){ fitoReportPaid(null); return; }
   updateReservation({paid:true,paidAt:Date.now()});
   // Tell the sheet, so the paid box ticks itself. A read-only request: a sheet script without the
   // 'paid' step just ignores it, so nothing can be overwritten.
-  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); let ref=r&&r.pay&&r.pay.ref;
+  // Update 50: always tell the sheet, even when this browser doesn't know the booking (booked in
+  // Instagram, paid in Safari). The sheet then matches it, or emails Seema. Kept on this phone and
+  // sent again until the sheet answers, so a weak signal can't lose a payment.
+  let ref='';
+  try{const r=JSON.parse(localStorage.getItem('fito_reserved')||'null'); ref=(r&&r.pay&&r.pay.ref)||'';
     // A personal link opened on this phone in the last 3 days is the payment that just went through.
     const pl=JSON.parse(localStorage.getItem('fito_paylink')||'null');
     if(pl&&pl.ref&&Date.now()-pl.at<3*864e5) ref=pl.ref;
-    localStorage.removeItem('fito_paylink');
-    if(ref&&typeof askSheet==='function'&&ON_LIVE_SITE) askSheet({action:'paid',ref,session:(q.get('paid')||'').slice(0,90)}).catch(()=>{});}catch(_){}
+    localStorage.removeItem('fito_paylink');}catch(_){}
+  fitoReportPaid({ref:String(ref||''),session:(q.get('paid')||'').slice(0,90),at:Date.now()});
   history.replaceState(null,'',location.pathname+location.hash);
   window.addEventListener('load',()=>setTimeout(()=>toast('Thank you, your payment went through. See you on delivery day!'),500));
 }catch(_){}})();
