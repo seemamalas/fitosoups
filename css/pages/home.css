@@ -416,3 +416,8 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
   .box-dock__text span{font-size:.8rem;color:var(--soft)}
   .box-dock__btn{border:none;background:var(--terra);color:#fff;border-radius:999px;padding:11px 18px;font-weight:500;font-size:.9rem;white-space:nowrap}
 }
+
+/* Update 52: packs left for limited flavours (POM POM). */
+.stock-note{display:block;margin-top:6px;font-size:.74rem;font-weight:700;letter-spacing:.02em}
+.stock-note:empty{display:none}
+.qty-stepper button.is-at-limit{opacity:.35}

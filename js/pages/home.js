@@ -36,6 +36,8 @@ let slotCounts={}, slotLimit=SLOT_LIMIT;
 // On the live site, times can't be picked until the sheet has said which are free ('loading').
 // If the sheet can't be reached at all ('failed'), booking still works: the sheet checks again when they reserve.
 let slotsState=(WAITLIST_URL&&ON_LIVE_SITE)?'loading':'ok';
+// Packs left for flavours with stock:true (POM POM), from the sheet with the slot counts. Unknown until it answers.
+let stockLeft={};
 function slotLeft(i,label){
   const d=DAYS[i]; if(!DAY_SLOTS[d.getDay()].includes(label)) return 0;
   return Math.min(...slotDays(mode,d).map(x=>slotLimit-(slotCounts[isoDay(x)+'|'+label]||0)));
@@ -94,7 +96,7 @@ document.getElementById('times').addEventListener('click',e=>{
 function loadSlots(){
   if(!WAITLIST_URL||!ON_LIVE_SITE) return Promise.resolve();
   const days=[...new Set(DAYS.flatMap(d=>slotDays('sub',d)).map(isoDay))];
-  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; slotsState='ok'; applySlots(); })
+  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; slotsState='ok'; if(d.stock) applyStock(d.stock); applySlots(); })
     .catch(err=>{ console.warn('FITO: could not load which times are free:',err&&err.message);
       // Show the times now (the sheet checks again when they reserve), and keep trying once more in the background.
       if(slotsState==='loading'){ slotsState='failed'; applySlots(); }
@@ -140,7 +142,7 @@ document.getElementById('flavCards').innerHTML=FLAVOURS.map(f=>`
   <article class="flavour-card">
     <div class="flavour-card__body">
       <div class="flavour-card__mascot">${CUBEIMG[f.c]?`<img src="${CUBEIMG[f.c]}" alt="${f.name} soup cube character" width="120" height="120">`:''}</div>
-      <div class="flavour-card__tag" style="color:${shade(f.c,-34)};background:${f.c}26">${f.tag}</div>
+      <div class="flavour-card__tag" id="tag-${f.id}" style="color:${shade(f.c,-34)};background:${f.c}26">${f.tag}</div>
       <div class="flavour-card__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
       <div class="flavour-card__sub">${f.sub}${f.ar?` <span class="flavour-card__arabic" lang="ar">· ${f.ar}</span>`:''}</div>
       <p>${f.desc}</p>
@@ -211,7 +213,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <div class="box-picker-row__thumb">${cube(f.c,64)}</div>
     <div>
       <div class="box-picker-row__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
-      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack<br><span class="cubes-pill" style="color:${shade(f.c,-34)};background:${f.c}26">${CUBES} cubes = ${SERV} bowls</span></div>
+      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack<br><span class="cubes-pill" style="color:${shade(f.c,-34)};background:${f.c}26">${CUBES} cubes = ${SERV} bowls</span>${f.stock?`<span class="stock-note" id="s-${f.id}" style="color:${shade(f.c,-30)}"></span>`:''}</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${f.ing}<br><em>${f.diet.join(' · ')}${f.note?' · '+f.note:''}</em></p></details>
     </div>
     <div class="qty-stepper">
@@ -247,9 +249,24 @@ document.getElementById('toppings').innerHTML=(TOPPINGS.length?`<h3 class="box-a
 
 document.getElementById('picker').addEventListener('click',e=>{
   const p=e.target.dataset.p,m=e.target.dataset.m;
-  if(p) qty[p]++; if(m&&qty[m]>0) qty[m]--;
+  if(p){ const lim=stockLeft[p], f=FLAVOURS.find(x=>x.id===p);
+    if(lim!=null&&qty[p]>=lim){ if(typeof toast==='function') toast(lim>0?`Only ${lim} ${f.name} left for now`:`${f.name} is sold out for now. More soon!`); }
+    else qty[p]++; }
+  if(m&&qty[m]>0) qty[m]--;
   if(p||m) render();
 });
+// Packs left from the sheet: shows "Only N left" (or sold out) and keeps the box within it.
+function applyStock(st){
+  FLAVOURS.filter(f=>f.stock&&f.avail).forEach(f=>{
+    const n=Number(st[f.id]); if(!Number.isFinite(n)) return;
+    stockLeft[f.id]=Math.max(0,Math.floor(n));
+    if(qty[f.id]>stockLeft[f.id]) qty[f.id]=stockLeft[f.id];
+    const note=document.getElementById('s-'+f.id), tag=document.getElementById('tag-'+f.id), left=stockLeft[f.id];
+    if(note) note.textContent=left>0?`Only ${left} left`:'Sold out for now, more soon';
+    if(tag) tag.textContent=left>0?`${f.tag} · only ${left} left`:'Sold out for now';
+  });
+  render();
+}
 document.getElementById('toppings').addEventListener('click',e=>{
   const p=e.target.dataset.tp,m=e.target.dataset.tm;
   if(p) tops[p]++; if(m&&tops[m]>0) tops[m]--;
@@ -281,6 +298,8 @@ function render(){
   FLAVOURS.filter(f=>f.avail).forEach(f=>{
     document.getElementById('q-'+f.id).textContent=qty[f.id];
     document.querySelector(`[data-m="${f.id}"]`).disabled=qty[f.id]===0;
+    const plus=document.querySelector(`[data-p="${f.id}"]`);
+    if(plus) plus.classList.toggle('is-at-limit',stockLeft[f.id]!=null&&qty[f.id]>=stockLeft[f.id]);
   });
   let topTotal=0,topCount=0;
   TOPPINGS.forEach(t=>{
