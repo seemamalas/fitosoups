@@ -9,13 +9,13 @@
 
 :root{
   color-scheme:light;
-  --paper:#FFFBF7; --tint:#F6EFE6; --tint2:#E9DFCF;
+  --paper:#FFFBF7; --tint:#FFFFFF; --tint2:#F2EFEB; --edge:#EFE7DC;
   /* Paper at 99% for fixed bars and panels: iOS 26 Safari can leave part of the screen blank
      around a fully opaque fixed element. 99% looks identical and avoids it. */
   --paper-fixed:rgba(255,251,247,.99);
   --ink:#3A2E22; --ink2:#6A5A48; --soft:#80705D;
-  --terra:#C1613C; --sage:#6B7A3A; --gold:#E8C766;
-  --rule:#DFD3BE;
+  --terra:#3A2E22; /* update 53: the accent is the brand brown (was orange #C1613C); colour comes from the flavours */ --sage:#6B7A3A; --gold:#E8C766;
+  --rule:#E8DFD1;
   --logo-brown:#493627; --crouton:#A86B32; --crumb:#E9CD98; --crust:#8A5426;
   --disp:'Fraunces',Georgia,serif;
   --script:'Parisienne',cursive;
@@ -27,7 +27,7 @@
 *{box-sizing:border-box}
 img{max-width:100%}
 [hidden]:not([hidden=until-found i]){display:none!important}
-html{-webkit-text-size-adjust:100%;scroll-padding-top:76px} /* in-page links land below the sticky menu */
+html{-webkit-text-size-adjust:100%;scroll-padding-top:96px} /* in-page links land below the sticky menu */
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
   font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
 svg{display:block;max-width:100%;height:auto}
@@ -72,11 +72,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .site-nav{position:sticky;top:0;z-index:60;background:var(--paper)}
 .site-nav__inner{max-width:1080px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:24px;position:relative}
 .site-nav__brand{flex-shrink:0;display:flex;align-items:center;gap:10px;text-decoration:none}
-.site-nav__wordmark{height:36px;width:auto}
-@media(max-width:480px){.site-nav__wordmark{height:30px}}
-@media(max-width:480px){.site-nav__inner{padding:10px 18px;gap:16px}.site-nav .site-nav__wordmark{height:27px}.site-nav__links{gap:18px}}
+.site-nav__wordmark{height:60px;width:auto;display:block}
+@media(max-width:480px){.site-nav__wordmark{height:46px}}
+@media(max-width:480px){.site-nav__inner{padding:10px 18px;gap:16px}.site-nav .site-nav__wordmark{height:46px}.site-nav__links{gap:18px}}
 /* Very small phones (320 to 359 px wide): shrink the header so the Box button stays on screen. */
-@media(max-width:359px){.site-nav__inner{padding:9px 12px;gap:10px}.site-nav .site-nav__wordmark{height:22px}.site-nav__links{gap:12px}}
+@media(max-width:359px){.site-nav__inner{padding:9px 12px;gap:10px}.site-nav .site-nav__wordmark{height:40px}.site-nav__links{gap:12px}}
 .site-nav__links{margin-left:auto;display:flex;gap:26px;align-items:center}
 .site-nav__links a{text-decoration:none;color:var(--ink2);font-size:.93rem}
 .site-nav__links a:hover{color:var(--terra)}
@@ -97,7 +97,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 @media(max-width:900px){.site-footer__grid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:30px 24px}.site-footer__about{grid-column:1/-1;max-width:46ch}}
 @media(max-width:600px){.site-footer__grid{grid-template-columns:1fr 1fr;justify-content:stretch;gap:28px 20px}}
 .site-footer__about{max-width:28ch}
-.site-footer__logo{height:30px;width:auto;margin-bottom:16px}
+.site-footer__logo{height:72px;width:auto;margin-bottom:18px}
 .site-footer__tagline,.site-footer__copy{margin:0}
 .site-footer a{color:var(--ink2);text-decoration:none;display:block;margin-bottom:8px}
 .site-footer a.site-social-link{display:flex}
@@ -193,3 +193,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
   color:var(--paper);padding:13px 24px;border-radius:22px;z-index:200;font-size:.93rem;line-height:1.4;text-align:center;
   transition:transform .3s cubic-bezier(.3,.9,.4,1)}
 .site-toast.is-visible{transform:translateY(0);opacity:1}
+
+/* Update 53: cards are white with a soft edge (was beige), matching the sleeves */
+.site-drawer__foot{box-shadow:0 -1px 0 var(--edge)}
+.site-nav__cart-count{background:var(--paper);color:var(--ink)}
+.site-nav__links a:hover,.site-footer a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:4px}

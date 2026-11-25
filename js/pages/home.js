@@ -213,7 +213,7 @@ document.getElementById('picker').innerHTML=FLAVOURS.map(f=>f.avail?`
     <div class="box-picker-row__thumb">${cube(f.c,64)}</div>
     <div>
       <div class="box-picker-row__name" style="color:${shade(f.c,-38)}">${nameArt(f)}</div>
-      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack<br><span class="cubes-pill" style="color:${shade(f.c,-34)};background:${f.c}26">${CUBES} cubes = ${SERV} bowls</span>${f.stock?`<span class="stock-note" id="s-${f.id}" style="color:${shade(f.c,-30)}"></span>`:''}</div>
+      <div class="box-picker-row__meta">${money(PRICE).replace(' ','&nbsp;')} a&nbsp;pack<br><span class="cubes-pill" style="color:${shade(f.c,-34)};background:${f.c}26">${CUBES} cubes &asymp; ${SERV} bowls</span>${f.stock?`<span class="stock-note" id="s-${f.id}" style="color:${shade(f.c,-30)}"></span>`:''}</div>
       <details class="ingredients-toggle"><summary>Ingredients</summary><p>${f.ing}<br><em>${f.diet.join(' · ')}${f.note?' · '+f.note:''}</em></p></details>
     </div>
     <div class="qty-stepper">

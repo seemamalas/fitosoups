@@ -276,7 +276,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 @media(max-width:480px){.box-picker-row{gap:10px;padding:12px 12px}.box-picker-row__thumb{width:50px;flex-basis:50px}.box-picker-row__name{font-size:1.45rem;overflow-wrap:normal;word-break:keep-all}}
 
 /* ---------- Box summary (right-hand panel) ---------- */
-.box-summary{background:var(--tint);border-radius:18px;padding:28px;position:sticky;top:84px}
+.box-summary{background:var(--tint);border-radius:18px;padding:28px;position:sticky;top:104px}
 .early-sub-flag{background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:20px}
 .early-sub-flag[hidden]{display:none}
 .early-sub-flag strong{display:block;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;
@@ -421,3 +421,8 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .stock-note{display:block;margin-top:6px;font-size:.74rem;font-weight:700;letter-spacing:.02em}
 .stock-note:empty{display:none}
 .qty-stepper button.is-at-limit{opacity:.35}
+
+/* Update 53: white cards with a soft edge, matching the sleeves */
+.flavour-card,.pack-explainer,.box-schedule,.box-picker-row,.box-builder__plan,.savings-track,.box-summary,.review-card,.early-subs,.home-stats{box-shadow:0 0 0 1px var(--edge)}
+.box-builder__plan::before{box-shadow:-1px -1px 0 var(--edge)}
+.qty-stepper button{background:var(--tint2)}

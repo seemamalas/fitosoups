@@ -25,7 +25,7 @@ const slotDays=(mode,first)=>Array.from({length:mode==='sub'?3:1},(_,k)=>{const 
 const delFor=m=>m==='sub'?0:DELIVERY;
 
 const FLAVOURS=[
-  {id:'caramel',name:'Caramel',c:'#DB7814',sub:'Sweet potato & butternut squash',tag:'Best seller',avail:true,
+  {id:'caramel',name:'Caramel',c:'#DB7814',sub:'Butternut squash & sweet potato',tag:'Best seller',avail:true,
    desc:'Velvety and naturally sweet, warmed through with cinnamon and nutmeg.',
    ing:'Butternut squash, water, sweet potato, red onion, honey, olive oil, salt, cinnamon, nutmeg, black pepper.',
    diet:['Vegetarian','No gluten'],note:'Contains honey',ar:''},
