@@ -10,6 +10,8 @@ let modeChosen=false;
 let mode='sub',plan='go',freq=4,firstIdx=0,
     qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0])),
     tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
+// Update 54: the FitR code on this box ({code, reward, id, packs, text}, see code.js), or null.
+let fitr=null;
 
 // The delivery calendar. Every delivery day (rules in catalog.js, closed days left out) from a week after today,
 // never before launch day, for the next four weeks.
@@ -311,6 +313,8 @@ function render(){
   // Prepaid plans: the box price above, times the number of boxes, less the extra prepay saving.
   const pp=mode==='sub'?PLANS[plan]:PLANS.go, pre=pp.boxes>0;
   const preFull=round2(total*pp.boxes), preSave=round2(preFull*pp.extra), prePay=round2(preFull-preSave);
+  // Update 54: a FitR code. Free packs leave the price as it is; a Free FITO box makes the total AED 0.
+  const cWhy=fitr?codeFits(fitr,{mode,packs:n,tops}):'none', cOn=!!fitr&&!cWhy, freeBox=cOn&&fitr.id==='box';
   document.getElementById('capLine').textContent=n
     ?`${n} pack${n>1?'s':''} · ${n*CUBES} cubes · about ${n*SERV} bowls`+(topCount?` · ${topCount} add-on${topCount>1?'s':''}`:'')
     :'Nothing in it yet';
@@ -332,20 +336,26 @@ function render(){
   document.getElementById('sTop').textContent=money(topTotal);
   document.getElementById('sDel').textContent=mode==='sub'?'Free':money(DELIVERY);
   // One big line: the 4-weekly price, or for a prepaid plan the one payment, with the price a box underneath.
-  document.getElementById('sTotal').textContent=money(pre?prePay:total);
+  document.getElementById('sTotal').textContent=money(freeBox?0:pre?prePay:total);
+  document.getElementById('sCodeRow').hidden=!cOn;
+  if(cOn){
+    document.getElementById('sCodeLbl').textContent=freeBox?'Free FITO box (FitR)':'FitR code';
+    document.getElementById('sCode').textContent=freeBox?'−'+money(total):'+'+codeGift(fitr);
+  }
+  renderCode(cWhy);
   document.getElementById('sTotLbl').textContent=pre?'Up front':mode==='sub'?'Every 4 weeks':'Total';
-  document.getElementById('sPer').innerHTML=!n?'':pre?`For ${pp.boxes} boxes, one every 4 weeks<br>${money(prePay/pp.boxes)} each instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
+  document.getElementById('sPer').innerHTML=!n||freeBox?'':pre?`For ${pp.boxes} boxes, one every 4 weeks<br>${money(prePay/pp.boxes)} each instead of ${money(total)}`:money((sub-save)/(n*SERV))+' a bowl';
   const btn=document.getElementById('addBtn');
   if(n<MIN){btn.disabled=true;btn.textContent=n===0?'Add four packs to start':`Add ${MIN-n} more to continue`;}
   else if(slotsState==='loading'){btn.disabled=true;btn.textContent='Checking free times…';}
-  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One\u2011time box':mode!=='sub'?'Book this box':'Book my soupscription';}
+  else{btn.disabled=false;btn.textContent=!modeChosen?'Choose Soupscription or One\u2011time box':freeBox?'Book my free box':mode!=='sub'?'Book this box':'Book my soupscription';}
   renderSizes();
   renderBox();
   syncBox();
   const dc=document.getElementById('dockCount'), ds2=document.getElementById('dockSub'), db=document.getElementById('dockBtn');
   if(dc){
     dc.textContent = n ? `${n} pack${n>1?'s':''}` : 'Your box is empty';
-    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : pre ? `${money(prePay)} for ${pp.boxes} boxes` : `${money(total)} · about ${n*SERV} bowls`;
+    ds2.textContent = n===0 ? 'Minimum 4 packs' : n<MIN ? `Add ${MIN-n} more to continue` : freeBox ? 'Free FITO box, nothing to pay' : pre ? `${money(prePay)} for ${pp.boxes} boxes` : `${money(total)} · about ${n*SERV} bowls`;
     db.textContent = n>=MIN ? 'Book' : 'See box';
   }
   const ff=document.getElementById('founderFlag'); if(ff) ff.hidden = mode!=='sub';
@@ -366,7 +376,7 @@ function render(){
     nudge.textContent=`Add ${next.min-n} more pack${next.min-n>1?'s':''} and your saving goes from ${Math.round(pct*100)}% to ${Math.round(next.pct*100)}%.`;
   }else nudge.hidden=true;
   // Short on purpose: the full rules live in the Terms, linked right after this line.
-  document.getElementById('terms').textContent=mode!=='sub'?'Pay by card or Apple Pay when you book.'
+  document.getElementById('terms').textContent=freeBox?'Nothing to pay: this box is on FitR.':mode!=='sub'?'Pay by card or Apple Pay when you book.'
     :pre?`One payment for all ${pp.boxes} boxes, when you book.`
     :'Pay for your first box when you book.';
 }
@@ -388,7 +398,9 @@ function syncBox(){
   const pct=mode==='sub'?discountFor(n):0, del=delFor(mode), total=n*PRICE*(1-pct)+tt+del;
   const pl=mode==='sub'?plan:'go', pp=PLANS[pl];
   const full=round2(total*pp.boxes), prepaid=pp.boxes?round2(full-round2(full*pp.extra)):0;
-  const next={mode,chosen:modeChosen,plan:pl,items:{...qty},tops:{...tops},packs:n,del,total,pct,freq,slot,first:DAYS[firstIdx].toISOString(),prepaid};
+  const freeBox=!!fitr&&!codeFits(fitr,{mode,packs:n,tops})&&fitr.id==='box';
+  const next={mode,chosen:modeChosen,plan:pl,items:{...qty},tops:{...tops},packs:n,del,total:freeBox?0:total,pct,freq,slot,first:DAYS[firstIdx].toISOString(),prepaid,
+    code:fitr?{...fitr}:null,free:freeBox?round2(total):0};
   if(box&&box.reserved&&JSON.stringify({...box,reserved:undefined})===JSON.stringify(next)) next.reserved=true;
   box=next; saveBox(); updateCart();
 }
@@ -398,6 +410,35 @@ document.getElementById('addBtn').onclick=()=>{
   if(!modeChosen){ nudgeChoice(); return; }
   syncBox();openDrawer();showReserveForm();
 };
+// Update 54: "Have a code?" One code per order. Apply asks the sheet; the sheet checks it again, for good, when they book.
+function showCodeMsg(text,good){ const m=document.getElementById('codeMsg'); m.textContent=text||''; m.hidden=!text; m.classList.toggle('is-ok',!!good); }
+function renderCode(why){
+  const on=document.getElementById('codeOn'), tog=document.getElementById('codeToggle'), form=document.getElementById('codeForm');
+  if(!on) return;
+  if(!fitr){ on.hidden=true; tog.hidden=false; return; }
+  tog.hidden=true; form.hidden=true; on.hidden=false;
+  document.getElementById('codeOnText').innerHTML=`<b>${escHtml(fitr.code)}</b> · ${escHtml(fitr.id==='box'?'Free FITO box':fitr.text)}`;
+  if(why==='fit') showCodeMsg(codeMessage('fit',fitr),false);
+  else showCodeMsg(mode==='sub'&&fitr.id!=='box'?'Our pick of flavour. It replaces the early subscriber\'s extra pack.':fitr.id==='box'?'Delivery included. Nothing to pay.':'Our pick of flavour.',true);
+}
+(function(){
+  const tog=document.getElementById('codeToggle'), form=document.getElementById('codeForm'), inp=document.getElementById('codeIn'), apply=document.getElementById('codeApply');
+  if(!tog) return;
+  tog.onclick=()=>{ form.hidden=!form.hidden; tog.setAttribute('aria-expanded',String(!form.hidden)); if(!form.hidden) inp.focus(); else showCodeMsg(''); };
+  form.onsubmit=e=>{
+    e.preventDefault();
+    if(!inp.value.trim()) return;
+    apply.disabled=true; apply.textContent='Checking…'; showCodeMsg('');
+    checkCode(inp.value).then(r=>{
+      apply.disabled=false; apply.textContent='Apply';
+      if(!r.ok){ showCodeMsg(codeMessage(r.why,null),false); return; }
+      fitr={code:r.code,reward:r.reward,id:r.id,packs:r.packs,text:r.text}; inp.value=''; render();
+    });
+  };
+  document.getElementById('codeRemove').onclick=()=>{ fitr=null; showCodeMsg(''); render(); };
+})();
+// The sheet turned the code down when they booked: take it off the box (the booking form says why).
+document.addEventListener('fito:code-removed',()=>{ fitr=null; render(); });
 // Not chosen yet: scroll back up to the two big buttons and give them a little shake.
 function nudgeChoice(){
   const t=document.querySelector('.box-builder__toggle'); if(!t) return;
@@ -432,13 +473,13 @@ if(track){
 
 // When the visitor empties their box from the cart drawer, reset the builder too.
 document.addEventListener('fito:box-emptied',()=>{
-  qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0]));tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));
+  qty=Object.fromEntries(FLAVOURS.map(f=>[f.id,0]));tops=Object.fromEntries(TOPPINGS.map(t=>[t.id,0]));fitr=null;showCodeMsg('');
   render();
 });
 
 // Restore a box saved earlier in this browser (cart.js has already loaded it).
 if(box&&box.items){
-  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};mode=box.mode||'sub';plan=PLANS[box.plan]?box.plan:'go';modeChosen=box.chosen!==false;
+  qty={...qty,...box.items};if(box.tops)tops={...tops,...box.tops};fitr=box.code||null;mode=box.mode||'sub';plan=PLANS[box.plan]?box.plan:'go';modeChosen=box.chosen!==false;
   const fi=DAYS.findIndex(d=>isoDay(d)===isoDay(new Date(box.first)));
   if(fi>=0){ firstIdx=fi; calMonth=monthOf(DAYS[fi]); if(box.slot) slot=box.slot; }
 }

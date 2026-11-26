@@ -101,6 +101,7 @@ function boxFields(b){
   if(b.mode==='sub'){ f.plan=pre?`Prepay ${pp.boxes} boxes (extra ${Math.round(pp.extra*100)}% off)`:'Pay as you go (minimum 2 boxes)';
     f.prepaid_boxes=pre?pp.boxes:0; f.prepaid_total_aed=pre?b.prepaid:0; }
   f.first_delivery=fmtLong(new Date(b.first)); f.first_delivery_iso=isoDay(new Date(b.first)); f.time_slot=b.slot||'';
+  if(codeOn(b)) f.fitr_code=b.code.code;   // update 54: the sheet checks it again and saves the reward
   return f;
 }
 
@@ -117,16 +118,18 @@ function showReserveForm(skipCheck){
   body.innerHTML=`<form class="reserve-form" id="reserveForm">
     <div>
       <p class="reserve-form__title">Reserve your ${sub?'soupscription':'box'}</p>
-      <p class="reserve-form__box">${pre?`${box.packs} packs a box · ${pp.boxes} boxes, ${money(box.prepaid)} up front`:`${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''}`} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
+      <p class="reserve-form__box">${codeIsFreeBox(box)?`Free FITO box · ${box.packs} packs · AED 0`:pre?`${box.packs} packs a box · ${pp.boxes} boxes, ${money(box.prepaid)} up front`:`${box.packs} packs · ${money(box.total)}${sub?' every 4 weeks':''}`} · ${sub?'first box':'delivered'} ${fmtLong(new Date(box.first))}, ${box.slot}</p>
+      ${codeOn(box)?`<p class="reserve-form__code">FitR code <b>${escHtml(box.code.code)}</b>: ${escHtml(box.code.id==='box'?'nothing to pay, delivery included':box.code.text)}</p>`:''}
     </div>
+    <p class="reserve-form__code-msg" id="rCodeMsg" role="alert" hidden></p>
     <label class="reserve-form__field">Full name<input id="rName" autocomplete="name" value="${v('name')}" required></label>
     <label class="reserve-form__field">Phone (WhatsApp)<input id="rPhone" type="tel" autocomplete="tel" placeholder="+971 5X XXX XXXX" value="${v('phone')}" required></label>
     <label class="reserve-form__field"><span>Email <small>(for your receipt)</small></span><input id="rEmail" type="email" autocomplete="email" value="${v('email')}" required></label>
     <label class="reserve-form__field">Area<select id="rArea" required><option value="" disabled selected>Choose your area in Dubai</option>${DUBAI_AREAS.map(a=>`<option>${a}</option>`).join('')}<option value="other">Another area in Dubai</option><option value="outside">Outside Dubai</option></select></label>
     <label class="reserve-form__field">Address<input id="rAddress" autocomplete="street-address" placeholder="Building or villa, flat number, street" value="${v('address')}" required></label>
-    <button class="site-btn reserve-form__submit" type="submit">Book and pay</button>
+    <button class="site-btn reserve-form__submit" type="submit">${codeIsFreeBox(box)?'Book my free box':'Book and pay'}</button>
     <p class="reserve-form__wait" id="rWait" role="status" hidden>This takes a few seconds. Please keep this page open.</p>
-    <p class="site-smallprint">Next, you pay securely by card or Apple Pay${pre?`, one payment for all ${pp.boxes} boxes`:sub?' for your first box':''}.${sub?' Minimum 2 boxes.':''}</p>
+    <p class="site-smallprint">${codeIsFreeBox(box)?'Nothing to pay: this box is on FitR. It doesn\'t start a subscription.':`Next, you pay securely by card or Apple Pay${pre?`, one payment for all ${pp.boxes} boxes`:sub?' for your first box':''}.${sub?' Minimum 2 boxes.':''}`}</p>
     <button class="site-btn site-btn--line reserve-form__back" type="button" id="rBack">Back to my box</button>
   </form>`;
   body.querySelector('#rBack').onclick=()=>updateCart(true);
@@ -153,26 +156,54 @@ function showReserveForm(skipCheck){
     const when=`${fmtLong(new Date(box.first))}, ${box.slot}`;
     const pp=planOf(box), pre=sub&&pp.boxes>0;
     const due=pre?box.prepaid:box.total;
-    // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box).
-    const pay=inDubai&&PAY_URL?{amount:payMoney(due),what:pre?`for all ${pp.boxes} boxes`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef,due)}:null;
+    // Update 54: with a FitR code the sheet must say yes first, so the payment page isn't opened straight away.
+    const withCode=codeOn(box)&&inDubai;
+    // What they pay now: the prepaid total, or this box (a soupscription paid box by box pays its first box). A free box: nothing.
+    const pay=inDubai&&PAY_URL&&due>0?{amount:payMoney(due),what:pre?`for all ${pp.boxes} boxes`:sub?'for your first box':'for your box',ref:bookingRef,link:payLinkFor(email,bookingRef,due)}:null;
     const fields={source:'Box builder',booking_ref:bookingRef,name,phone:form.rPhone.value.trim(),email,
       lives_in:inDubai?'Dubai':'Outside Dubai',area:area==='other'?'Other Dubai area':area==='outside'?'':area,address:form.rAddress.value.trim(),...boxFields(box)};
+    if(!inDubai&&fields.fitr_code){ delete fields.fitr_code; if(box.free) fields.price_per_box_aed=box.free; }
     // No waiting: the payment page opens straight away in a new tab (it has to open inside the click,
     // or the browser blocks it), and the booking is saved to the sheet in the background on this page.
     let opened=null;
-    if(pay){ try{ opened=window.open(pay.link,'_blank'); if(opened) opened.opener=null; }catch(_){} }
+    if(pay&&!withCode){ try{ opened=window.open(pay.link,'_blank'); if(opened) opened.opener=null; }catch(_){} }
     const booked={...box,items:{...box.items},tops:{...(box.tops||{})}}, keptTyped={...typed};
-    typed={};
-    body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
-      ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
-      : `<p>Your ${sub?'soupscription':'box'} for ${when} is saved. ${opened?'Your secure payment page has opened in a new tab.':'Pay now to confirm it.'}</p>${payPanel(pay)}`}</div>`;
-    // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
-    const summary=sub?`Soupscription, ${booked.packs} packs${pre?`, ${pp.boxes} boxes prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${booked.packs} packs, ${when}.`;
-    try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay,payOpened:!!opened,outside:!inDubai}));localStorage.removeItem('fito_paylink');}catch(_){}
-    box=null; saveBox(); document.getElementById('cartN').textContent=0;
-    document.dispatchEvent(new CustomEvent('fito:box-emptied'));
+    const freeBox=codeIsFreeBox(box)&&inDubai, codeTxt=withCode?` FitR code ${box.code.code}: ${freeBox?'free box':box.code.text}.`:'';
+    const done=()=>{
+      typed={};
+      body.innerHTML=`<div class="reserve-done"><p class="reserve-done__title">${inDubai?"You're booked":"You're on the list"}${first?', '+escHtml(first):''}.</p>${!inDubai
+        ? `<p>We only deliver in Dubai for now, so we've saved your box and will tell you as soon as FITO reaches you.</p>`
+        : freeBox ? `<p>Your free FITO box for ${when} is booked, delivery included. There's nothing to pay.</p>`
+        : `<p>Your ${sub?'soupscription':'box'} for ${when} is saved.${withCode?` Your FitR code is on it: ${escHtml(box.code.text)}.`:''} ${opened?'Your secure payment page has opened in a new tab.':'Pay now to confirm it.'}</p>${payPanel(pay)}`}</div>`;
+      // Booked, so the box is no longer "in the basket": remember what they booked (and how to pay), then empty it.
+      const summary=(freeBox?`Free FITO box, ${booked.packs} packs, ${when}.`:sub?`Soupscription, ${booked.packs} packs${pre?`, ${pp.boxes} boxes prepaid`:' every 4 weeks'}. First box ${when}.`:`One-time box, ${booked.packs} packs, ${when}.`)+(freeBox?'':codeTxt);
+      try{localStorage.setItem('fito_reserved',JSON.stringify({summary,first:booked.first,at:Date.now(),pay,payOpened:!!opened,outside:!inDubai,free:freeBox}));localStorage.removeItem('fito_paylink');}catch(_){}
+      box=null; saveBox(); document.getElementById('cartN').textContent=0;
+      document.dispatchEvent(new CustomEvent('fito:box-emptied'));
+    };
     // Save it, trying again a few times if Google is slow or busy.
     const attempt=n=>sendReservation(fields).catch(err=>{ if(n>=3) throw err; return new Promise(r=>setTimeout(r,[2000,5000,9000][n])).then(()=>attempt(n+1)); });
+    if(withCode){
+      // Update 54: wait for the sheet. It checks the code for good (once only, new customers, in date).
+      btn.textContent='Booking…'; const wait=form.querySelector('#rWait'); if(wait) wait.hidden=false;
+      attempt(0).then(res=>{
+        if(String(res.status).indexOf('code_')===0){
+          // Turned down: nothing was saved. Take the code off, keep what they typed, and say why.
+          const c=booked.code; typed=keptTyped; box.code=null; saveBox();
+          document.dispatchEvent(new CustomEvent('fito:code-removed'));
+          showReserveForm(true);
+          const m=document.getElementById('rCodeMsg'); if(m){ m.textContent=codeMessage(res.status.slice(5),c); m.hidden=false; }
+          return;
+        }
+        if(res.status==='full'||res.status==='unavailable'){ typed=keptTyped; showSlotFull(res.status,true); return; }
+        done();
+      }).catch(()=>{
+        btn.disabled=false; btn.textContent=freeBox?'Book my free box':'Book and pay'; if(wait) wait.hidden=true;
+        toast("We couldn't save your booking just now. Please try again, or message us on WhatsApp.");
+      });
+      return;
+    }
+    done();
     attempt(0).then(res=>{
       if(res.status==='full'||res.status==='unavailable'){
         // Someone took the last place a moment earlier (rare): give the box back and let them pick another time.

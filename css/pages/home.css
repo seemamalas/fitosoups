@@ -8,12 +8,10 @@
 .home-hero{padding:60px 0 56px}
 .home-hero__grid{display:grid;grid-template-columns:1.04fr .96fr;gap:48px;align-items:center}
 @media(max-width:900px){.home-hero__grid{grid-template-columns:1fr;gap:32px}}
-.home-hero__title{margin-bottom:20px}
+.home-hero__title{margin-bottom:14px}
 .home-hero__keep{white-space:nowrap} /* never leave "and" alone on a line */
-/* The script line sits on its own line, with a little room on the left so the
-   swash of the "r" in Parisienne is never cut off or pushed past the margin. */
-.home-hero__accent{font-family:var(--script);font-size:1.04em;color:var(--terra);
-  display:block;line-height:1.05;padding:.06em 0 0 .1em;margin-top:.02em}
+/* Update 54: the second line is a plain subline under the Funflare headline (no script). */
+.home-hero__sub{font-size:clamp(1.15rem,2.2vw,1.5rem);font-weight:500;color:var(--ink2);line-height:1.3;letter-spacing:-.01em;margin:0 0 18px}
 .home-hero__lede{font-size:1.13rem;color:var(--ink2);max-width:44ch;margin-bottom:28px}
 .home-hero__ctas{display:flex;gap:12px;flex-wrap:wrap}
 .home-hero__shot{margin:0}
@@ -82,7 +80,7 @@
 .flavour-card__mascot img{width:120px;height:120px;display:block}
 /* The tag above each flavour name, as a pill in that flavour's colour (19 November 2026). */
 .flavour-card__tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding:5px 11px 4px;border-radius:999px;margin-bottom:10px;align-self:flex-start;width:fit-content}
-.flavour-card__name{font-family:var(--script);font-weight:600;font-size:2.4rem;line-height:1.05;
+.flavour-card__name{font-family:var(--brand);font-weight:400;font-size:2.4rem;line-height:1.05;
   letter-spacing:.008em;color:var(--terra);margin-bottom:8px}
 .flavour-card__sub{font-size:.92rem;color:var(--ink2);font-weight:500;margin-bottom:12px}
 .flavour-card p{font-size:.94rem;color:var(--ink2)}
@@ -253,7 +251,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-picker-row{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
   background:var(--tint);border-radius:16px;padding:14px 18px;margin-bottom:12px}
 .box-picker-row__thumb{width:64px;flex:0 0 64px}
-.box-picker-row__name{font-family:var(--script);font-weight:600;font-size:1.85rem;line-height:1.15;
+.box-picker-row__name{font-family:var(--brand);font-weight:400;font-size:1.85rem;line-height:1.15;
   letter-spacing:.008em;color:var(--terra)}
 .box-picker-row__meta{font-size:.84rem;color:var(--soft);line-height:1.45}
 .pm-br{display:none}
@@ -296,7 +294,7 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .box-art__row{display:flex;align-items:center;gap:10px;padding:10px 14px;min-height:56px}
 .box-art__row+.box-art__row{border-top:1.2px dashed rgba(58,46,34,.28)}
 .box-art__main{flex:1;min-width:0}
-.box-art__name{font-family:var(--script);font-size:1.3rem;line-height:1.1;color:var(--ink)}
+.box-art__name{font-family:var(--brand);font-size:1.3rem;line-height:1.1;color:var(--ink)}
 .box-art__packs{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
 .box-art__pack{display:grid;grid-template-columns:1fr 1fr;gap:1px;width:24px;padding:2px;border:1px solid rgba(58,46,34,.3);border-radius:5px;background:#fff}
 .box-art__pack svg{width:100%;height:auto;display:block}
@@ -426,3 +424,23 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .flavour-card,.pack-explainer,.box-schedule,.box-picker-row,.box-builder__plan,.savings-track,.box-summary,.review-card,.early-subs,.home-stats{box-shadow:0 0 0 1px var(--edge)}
 .box-builder__plan::before{box-shadow:-1px -1px 0 var(--edge)}
 .qty-stepper button{background:var(--tint2)}
+
+/* ---------- Update 54: "Have a code?" (FitR codes) ---------- */
+.box-summary__row--code{color:var(--ink)}
+.box-summary__row--code #sCode{font-weight:600;white-space:nowrap}
+.code-box{margin-top:16px;border-top:1px solid var(--rule);padding-top:12px}
+.code-box__toggle{background:none;border:0;padding:4px 0;color:var(--ink);font-size:.92rem;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.code-box__form{display:flex;gap:8px;margin-top:8px}
+.code-box__form[hidden],.code-box__on[hidden],.code-box__msg[hidden]{display:none}
+.code-box__form input{flex:1;min-width:0;border:1.5px solid var(--rule);border-radius:12px;padding:11px 14px;font:inherit;font-size:.95rem;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:#fff}
+.code-box__form input::placeholder{text-transform:none;letter-spacing:0;color:var(--soft)}
+.code-box__form input:focus{outline:2px solid var(--ink);outline-offset:1px;border-color:transparent}
+.code-box__apply{border:0;border-radius:999px;padding:0 20px;background:var(--ink);color:#fff;font:inherit;font-size:.92rem;font-weight:500;cursor:pointer}
+.code-box__apply:disabled{opacity:.55;cursor:wait}
+.code-box__on{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;font-size:.9rem;color:var(--ink);
+  background:var(--tint2);border-radius:12px;padding:10px 14px}
+.code-box__on b{letter-spacing:.04em}
+.code-box__remove{background:none;border:0;padding:0;color:var(--ink2);font-size:.85rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:nowrap}
+.code-box__msg{margin:8px 0 0;font-size:.86rem;line-height:1.5;color:var(--ink2)}
+.code-box__msg.is-ok{color:#3D6B2F}

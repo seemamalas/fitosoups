@@ -17,9 +17,10 @@
   --terra:#3A2E22; /* update 53: the accent is the brand brown (was orange #C1613C); colour comes from the flavours */ --sage:#6B7A3A; --gold:#E8C766;
   --rule:#E8DFD1;
   --logo-brown:#493627; --crouton:#A86B32; --crumb:#E9CD98; --crust:#8A5426;
-  --disp:'Fraunces',Georgia,serif;
-  --script:'Parisienne',cursive;
-  --brand:'Funflare','Fraunces',Georgia,serif;
+  /* Update 54: headlines are Funflare, the lettering on the logo and sleeves. Everything else is Work Sans,
+     so --disp (small titles and numbers) is Work Sans too. Fraunces and the script are gone. */
+  --disp:'Work Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  --brand:'Funflare','Work Sans',sans-serif;
   --ui:'Work Sans',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
@@ -31,8 +32,10 @@ html{-webkit-text-size-adjust:100%;scroll-padding-top:96px} /* in-page links lan
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);
   font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
 svg{display:block;max-width:100%;height:auto}
-h1,h2,h3{font-family:var(--disp);font-weight:600;line-height:1.12;margin:0;letter-spacing:-0.02em}
-h1{font-size:clamp(2.5rem,6.4vw,4.1rem)}
+h1,h2,h3{margin:0}
+h1,h2{font-family:var(--brand);font-weight:400;text-transform:uppercase;letter-spacing:.02em;line-height:1.02;color:var(--logo-brown)}
+h3{font-family:var(--ui);font-weight:600;line-height:1.25;letter-spacing:-.01em}
+h1{font-size:clamp(2.6rem,7.2vw,4.6rem)}
 h2{font-size:clamp(1.9rem,4vw,2.8rem)}
 h3{font-size:1.3rem}
 p{margin:0 0 1.05em}
@@ -124,7 +127,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .cart-item--plain{border:none}
 .cart-item__thumb{width:46px;flex:0 0 46px}
 .cart-item__label{padding-left:2px}
-.cart-item__name{font-family:var(--script);font-weight:600;font-size:1.55rem;line-height:1.15;
+.cart-item__name{font-family:var(--brand);font-weight:400;font-size:1.55rem;line-height:1.15;
   letter-spacing:.008em;color:var(--ink)}
 .cart-item__meta{font-size:.82rem;color:var(--soft)}
 .cart-item__price{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
@@ -198,3 +201,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .site-drawer__foot{box-shadow:0 -1px 0 var(--edge)}
 .site-nav__cart-count{background:var(--paper);color:var(--ink)}
 .site-nav__links a:hover,.site-footer a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:4px}
+
+/* Update 54: FitR code notes in the cart and the booking form. */
+.reserve-form__code{margin:6px 0 0;font-size:.88rem;color:var(--ink)}
+.reserve-form__code-msg{margin:0;font-size:.88rem;line-height:1.5;color:#9A4C1E;background:#FDF1E6;border-radius:12px;padding:10px 14px}
+.cart-item__price--free{color:#3D6B2F;font-weight:600}

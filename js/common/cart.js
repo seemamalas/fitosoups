@@ -83,6 +83,7 @@ function updateCart(force){
     const payPart=r.paid?`<p class="cart-reserved__paid">Paid. Thank you, there's nothing more to do.</p>`
       :r.pay&&r.payOpened?`<p>Thank you! Once your payment has gone through, there's nothing more to do.</p><p class="site-smallprint">Payment didn't go through? <a class="js-paylink" href="${escHtml(r.pay.link)}" target="_blank" rel="noopener">Pay ${escHtml(r.pay.amount)} here</a>.</p>`
       :r.pay?`${payPanel(r.pay)}<p>Already paid? Thank you, there's nothing more to do.</p>`
+      :r.free?`<p>Nothing to pay: your box is on FitR.</p>`
       :`<p>We'll send your payment link by email and WhatsApp before then.</p>`;
     body.innerHTML=`<div class="cart-empty cart-reserved"><p class="cart-reserved__title">${r.paid?"You're booked and paid.":"You're booked."}</p><p>${escHtml(r.summary)}</p>${payPart}<p>To change anything, <a href="https://wa.me/971556058152">message us on WhatsApp</a>.</p></div>`;
     foot.hidden=true; return;
@@ -107,16 +108,18 @@ function updateCart(force){
     +(box.pct?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Subscriber saving</div><div class="cart-item__meta">${Math.round(box.pct*100)}% off ${box.packs} packs</div></div><div class="cart-item__price cart-item__price--saving">−${money(box.packs*PRICE*box.pct)}</div></div>`:'')
     +(box.mode==='sub'&&planOf(box).boxes?`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title cart-item__label-title--saving">Prepay ${planOf(box).boxes} boxes</div><div class="cart-item__meta">${money(box.total)} a box, extra ${Math.round(planOf(box).extra*100)}% off</div></div><div class="cart-item__price">${money(box.prepaid)}</div></div>`:'')
     +`<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title">Delivery</div><div class="cart-item__meta">${box.mode==='sub'?'Free for early subscribers':'Anywhere in Dubai'}</div></div><div class="cart-item__price">${box.del?money(box.del):'Free'}</div></div>`
+    // Update 54: the FitR code, and what it gives (or why it doesn't apply to this box).
+    +(box.code?(()=>{const on=codeOn(box);return `<div class="cart-item cart-item--plain"><div class="cart-item__label"><div class="cart-item__label-title">${on&&box.code.id==='box'?'Free FITO box':'FitR code'}</div><div class="cart-item__meta">${escHtml(box.code.code)} · ${escHtml(on?box.code.text:codeMessage('fit',box.code))}</div></div><div class="cart-item__price${on?' cart-item__price--free':''}">${on?(box.code.id==='box'?'−'+money(box.free):'Free'):''}</div></div>`;})():'')
     +`<button class="site-btn site-btn--line cart-clear" id="clearBox">Empty the box</button>`;
   const pp=planOf(box), pre=box.mode==='sub'&&pp.boxes>0;
   document.getElementById('dTotal').textContent=money(pre?box.prepaid:box.total);
-  document.getElementById('dTerms').textContent=box.mode!=='sub' ? 'One-time box · no commitment'
+  document.getElementById('dTerms').textContent=codeIsFreeBox(box) ? 'Free FITO box from FitR · nothing to pay' : box.mode!=='sub' ? 'One-time box · no commitment'
     : pre ? `${pp.boxes} boxes, paid up front · first box ${fmt(new Date(box.first))}, ${box.slot||''} · pause up to ${PREPAY_PAUSES}`
     : `${money(box.total)} every 4 weeks · first box ${fmt(new Date(box.first))}, ${box.slot||''} · minimum 2 boxes, then skip or cancel up to 3 days before`;
   if(box.reserved) document.getElementById('dTerms').textContent='Booked. To change anything, message us on WhatsApp.';
   const short=box.packs<MIN, co=document.getElementById('checkout');
   co.disabled=short;
-  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to book`:box.chosen===false?'Choose Soupscription or One\u2011time box':box.reserved?'Update my booking':'Book and pay';
+  co.textContent=short?`Add ${MIN-box.packs} more pack${MIN-box.packs>1?'s':''} to book`:box.chosen===false?'Choose Soupscription or One\u2011time box':box.reserved?'Update my booking':codeIsFreeBox(box)?'Book my free box':'Book and pay';
   if(short) document.getElementById('dTerms').textContent='Four packs minimum, then as many as you like.';
   body.querySelector('#clearBox').onclick=()=>{
     box=null;
