@@ -438,9 +438,14 @@ button.cal__day.is-full{background:transparent;border-style:dashed;color:var(--s
 .code-box__form input:focus{outline:2px solid var(--ink);outline-offset:1px;border-color:transparent}
 .code-box__apply{border:0;border-radius:999px;padding:0 20px;background:var(--ink);color:#fff;font:inherit;font-size:.92rem;font-weight:500;cursor:pointer}
 .code-box__apply:disabled{opacity:.55;cursor:wait}
-.code-box__on{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;font-size:.9rem;color:var(--ink);
-  background:var(--tint2);border-radius:12px;padding:10px 14px}
-.code-box__on b{letter-spacing:.04em}
+.code-box__on{margin-top:4px;font-size:.9rem;color:var(--ink);background:var(--tint2);border:1.5px solid transparent;border-radius:12px;padding:10px 14px}
+.code-box__on.is-ready{background:#F1F5EA;border-color:#C9D8B4}
+.code-box__head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.code-box__head b{letter-spacing:.04em;word-break:break-all}
+.code-box__state{margin:2px 0 0;font-size:.88rem;color:var(--ink2)}
+.code-box__on.is-ready .code-box__state{color:#3D6B2F;font-weight:500}
+.code-box__tick{font-weight:700}
 .code-box__remove{background:none;border:0;padding:0;color:var(--ink2);font-size:.85rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer;white-space:nowrap}
-.code-box__msg{margin:8px 0 0;font-size:.86rem;line-height:1.5;color:var(--ink2)}
+.code-box__msg{margin:8px 0 0;font-size:.88rem;line-height:1.5;color:#9A4C1E;background:#FDF1E6;border-radius:12px;padding:10px 14px}
+.code-box__msg.is-ok{background:none;padding:0}
 .code-box__msg.is-ok{color:#3D6B2F}

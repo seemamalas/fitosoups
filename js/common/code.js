@@ -9,7 +9,8 @@
 /* Whether the code works with this box. Returns '' when it does, otherwise why not ('fit'). */
 function codeFits(c,b){
   if(!c||!b) return 'none';
-  if(c.id==='first') return b.packs>=MIN?'':'fit';
+  if((b.packs||0)<MIN) return 'fit';
+  if(c.id==='first') return '';
   if(c.id==='sub') return b.mode==='sub'?'':'fit';
   if(c.id==='box'){ const tops=Object.values(b.tops||{}).reduce((a,n)=>a+n,0); return b.mode!=='sub'&&b.packs===4&&!tops?'':'fit'; }
   return 'fit';
@@ -17,6 +18,23 @@ function codeFits(c,b){
 const codeOn=b=>!!(b&&b.code&&!codeFits(b.code,b));
 const codeIsFreeBox=b=>codeOn(b)&&b.code.id==='box';
 
+/* Update 55: what to do next so the code works on this box, in plain words ('' when it already works). */
+function codeHint(c,b){
+  const n=b.packs||0, tops=Object.values(b.tops||{}).reduce((a,x)=>a+x,0), more=k=>`${k} more pack${k>1?'s':''}`;
+  if(c.id==='box'){
+    if(b.mode==='sub') return 'Your free box is a one-time box. Choose One-time box above to use your code.';
+    if(n<4) return n?`Pick ${more(4-n)} for your free box: 4 packs, any flavours.`:'Now pick any 4 packs for your free box.';
+    if(n>4) return `Your free box holds 4 packs. Take out ${n-4} to use your code.`;
+    if(tops) return "Crunch isn't part of the free box. Take it out to use your code.";
+    return '';
+  }
+  if(c.id==='sub'){
+    if(b.mode!=='sub') return 'Your 2 free packs come with a Soupscription. Choose Soupscription above to use your code.';
+    if(n<MIN) return n?`Pick ${more(MIN-n)} to start your Soupscription.`:`Now pick at least ${MIN} packs for your Soupscription.`;
+    return '';
+  }
+  return n<MIN?(n?`Pick ${more(MIN-n)} to use your code.`:`Now pick at least ${MIN} packs to use your code.`):'';
+}
 /* What the code gives, in a few words, for the box summary and the cart. */
 function codeGift(c){
   return c.id==='box'?'Free FITO box':c.id==='sub'?'2 free packs':'1 free pack';
@@ -36,6 +54,7 @@ function codeMessage(why,c){
       : id==='box' ? 'This code is for a one-time box of 4 packs, without add-ons. Set your box to that to use it.'
       : 'This code needs a box of 4 packs or more.';
     case 'dubai': return 'FitR codes are for deliveries in Dubai.';
+    case 'once': return "FitR codes are one per person, and we found an earlier FitR order with your phone or email. You can still book without it.";
     default: return "We couldn't check your code just now. Please try again in a moment.";
   }
 }

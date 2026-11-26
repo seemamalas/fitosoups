@@ -122,10 +122,12 @@ document.getElementById('eqArt').innerHTML=
    <span class="pack-explainer__sign">=</span>
    <div class="pack-explainer__result">${bowl('#DB7814',84)}${bowl('#DB7814',84)}</div>`;
 // Second line of the explainer: four packs (one of each flavour, mixed) make a box.
+// Update 55: one pack of each flavour, in the flavour's own colour (the sleeve colours, POM POM included).
+const EQ_COLS=FLAVOURS.filter(f=>f.avail).slice(0,4).map(f=>f.c);
 function packTile(c){const sq=(x,y,f)=>`<rect x="${x}" y="${y}" width="15" height="15" rx="3" fill="${f}" stroke="${INK}" stroke-width="1.6"/>`;
   return `<svg class="pack-explainer__pack" viewBox="0 0 44 44" aria-hidden="true"><rect x="1.5" y="1.5" width="41" height="41" rx="8" fill="#fff" stroke="${INK}" stroke-opacity=".45" stroke-width="1.4"/>
-    ${sq(5.5,5.5,shade(c,22))}${sq(23.5,5.5,c)}${sq(5.5,23.5,c)}${sq(23.5,23.5,shade(c,-18))}</svg>`;}
-function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#DB7814','#819C35','#C0662B','#DB7814'];
+    ${sq(5.5,5.5,c)}${sq(23.5,5.5,c)}${sq(5.5,23.5,c)}${sq(23.5,23.5,c)}</svg>`;}
+function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=EQ_COLS;
   const pk=(x,c)=>`<rect x="${x}" y="12" width="23" height="40" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.6"/><rect x="${x+4}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="17" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+4}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/><rect x="${x+12.5}" y="25.5" width="6.5" height="6.5" rx="1.5" fill="${c}"/>`;
   return `<svg class="pack-explainer__box" viewBox="0 0 140 108" aria-hidden="true">
     <path d="M14 30 H126 V50 H14 Z" fill="${inside}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
@@ -136,7 +138,7 @@ function boxGlyph(){const kraft='#E4CFA6', inside=shade('#E4CFA6',-22), cs=['#DB
     <rect x="42" y="62" width="56" height="24" rx="5" fill="#FBF7F0" stroke="${INK}" stroke-opacity=".5" stroke-width="1.2"/>
     <text x="70" y="80" text-anchor="middle" font-family="Funflare, sans-serif" font-size="15" letter-spacing=".5" fill="${INK}">FITO</text></svg>`;}
 document.getElementById('boxEqArt').innerHTML=
-  `<div class="pack-explainer__cubes pack-explainer__cubes--packs">${['#DB7814','#819C35','#C0662B','#DB7814'].map(packTile).join('')}</div>
+  `<div class="pack-explainer__cubes pack-explainer__cubes--packs">${EQ_COLS.map(packTile).join('')}</div>
    <span class="pack-explainer__sign">=</span>
    <div class="pack-explainer__result">${boxGlyph()}</div>`;
 
@@ -417,9 +419,13 @@ function renderCode(why){
   if(!on) return;
   if(!fitr){ on.hidden=true; tog.hidden=false; return; }
   tog.hidden=true; form.hidden=true; on.hidden=false;
-  document.getElementById('codeOnText').innerHTML=`<b>${escHtml(fitr.code)}</b> · ${escHtml(fitr.id==='box'?'Free FITO box':fitr.text)}`;
-  if(why==='fit') showCodeMsg(codeMessage('fit',fitr),false);
-  else showCodeMsg(mode==='sub'&&fitr.id!=='box'?'Our pick of flavour. It replaces the early subscriber\'s extra pack.':fitr.id==='box'?'Delivery included. Nothing to pay.':'Our pick of flavour.',true);
+  const ready=why!=='fit', what=fitr.id==='box'?'Free FITO box':fitr.id==='sub'?'2 free packs':'1 free pack';
+  document.getElementById('codeOnCode').textContent=fitr.code;
+  const st=document.getElementById('codeState');
+  st.innerHTML=ready?`<span class="code-box__tick" aria-hidden="true">✓</span> ${what} applied`:`${what} · not applied yet`;
+  on.classList.toggle('is-ready',ready);
+  if(!ready) showCodeMsg(codeHint(fitr,{mode,packs:Object.values(qty).reduce((a,b)=>a+b,0),tops}),false);
+  else showCodeMsg(fitr.id==='box'?'Delivery included. Nothing to pay.':mode==='sub'?'Our pick of flavour. It replaces the early subscriber\'s extra pack.':'Our pick of flavour.',true);
 }
 (function(){
   const tog=document.getElementById('codeToggle'), form=document.getElementById('codeForm'), inp=document.getElementById('codeIn'), apply=document.getElementById('codeApply');
@@ -432,7 +438,11 @@ function renderCode(why){
     checkCode(inp.value).then(r=>{
       apply.disabled=false; apply.textContent='Apply';
       if(!r.ok){ showCodeMsg(codeMessage(r.why,null),false); return; }
-      fitr={code:r.code,reward:r.reward,id:r.id,packs:r.packs,text:r.text}; inp.value=''; render();
+      fitr={code:r.code,reward:r.reward,id:r.id,packs:r.packs,text:r.text}; inp.value='';
+      // Update 55: the code only works with one kind of box, so the builder switches to it.
+      if(r.id==='box'&&(mode!=='one'||!modeChosen)) document.getElementById('tOne').click();
+      else if(r.id==='sub'&&(mode!=='sub'||!modeChosen)) document.getElementById('tSub').click();
+      render();
     });
   };
   document.getElementById('codeRemove').onclick=()=>{ fitr=null; showCodeMsg(''); render(); };
