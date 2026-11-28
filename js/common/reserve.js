@@ -142,7 +142,7 @@ function showReserveForm(skipCheck){
     const days=slotDays(box.mode,new Date(box.first)).map(isoDay), s=box.slot;
     fetchSlotCounts(days).then(d=>{
       if(document.getElementById('reserveForm')!==form) return;
-      if(days.some(x=>(d.counts[x+'|'+s]||0)>=(d.limit||SLOT_LIMIT))) showSlotFull('full',false);
+      if(days.some(x=>(d.counts[x+'|'+s]||0)>=(d.limit||SLOT_LIMIT)||Object.keys(d.counts).reduce((a,c)=>c.startsWith(x+'|')?a+(d.counts[c]||0):a,0)>=(d.dayLimit||DAY_LIMIT))) showSlotFull('full',false);
     }).catch(()=>{});
   }
 

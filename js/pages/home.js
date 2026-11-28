@@ -34,7 +34,7 @@ let slot=DAY_SLOTS[DAYS[0].getDay()][0];
 // Each time slot takes SLOT_LIMIT deliveries. On the live site the sheet reports how many are
 // already booked. A soupscription needs room on its first day and when it comes back 4 and 8 weeks
 // later; a day with every slot full is crossed out. The sheet makes the final check when someone reserves.
-let slotCounts={}, slotLimit=SLOT_LIMIT;
+let slotCounts={}, slotLimit=SLOT_LIMIT, dayLimit=DAY_LIMIT;
 // On the live site, times can't be picked until the sheet has said which are free ('loading').
 // If the sheet can't be reached at all ('failed'), booking still works: the sheet checks again when they reserve.
 let slotsState=(WAITLIST_URL&&ON_LIVE_SITE)?'loading':'ok';
@@ -42,7 +42,10 @@ let slotsState=(WAITLIST_URL&&ON_LIVE_SITE)?'loading':'ok';
 let stockLeft={};
 function slotLeft(i,label){
   const d=DAYS[i]; if(!DAY_SLOTS[d.getDay()].includes(label)) return 0;
-  return Math.min(...slotDays(mode,d).map(x=>slotLimit-(slotCounts[isoDay(x)+'|'+label]||0)));
+  // Update 56: a place in the time slot, and in the day (DAY_LIMIT deliveries a day, every time slot together).
+  return Math.min(...slotDays(mode,d).map(x=>{const k=isoDay(x)+'|';
+    const day=Object.keys(slotCounts).reduce((a,c)=>c.startsWith(k)?a+(slotCounts[c]||0):a,0);
+    return Math.min(slotLimit-(slotCounts[k+label]||0),dayLimit-day);}));
 }
 const dayOpen=i=>DAY_SLOTS[DAYS[i].getDay()].some(l=>slotLeft(i,l)>0);
 const monthOf=d=>new Date(d.getFullYear(),d.getMonth(),1);
@@ -98,7 +101,7 @@ document.getElementById('times').addEventListener('click',e=>{
 function loadSlots(){
   if(!WAITLIST_URL||!ON_LIVE_SITE) return Promise.resolve();
   const days=[...new Set(DAYS.flatMap(d=>slotDays('sub',d)).map(isoDay))];
-  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; slotsState='ok'; if(d.stock) applyStock(d.stock); applySlots(); })
+  return fetchSlotCounts(days).then(d=>{ slotCounts=d.counts; if(d.limit) slotLimit=d.limit; if(d.dayLimit) dayLimit=d.dayLimit; slotsState='ok'; if(d.stock) applyStock(d.stock); applySlots(); })
     .catch(err=>{ console.warn('FITO: could not load which times are free:',err&&err.message);
       // Show the times now (the sheet checks again when they reserve), and keep trying once more in the background.
       if(slotsState==='loading'){ slotsState='failed'; applySlots(); }
